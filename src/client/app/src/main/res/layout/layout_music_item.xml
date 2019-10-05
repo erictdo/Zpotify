@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/parent_layout_music"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp" >
+
+    <TextView
+        android:id="@+id/tv_music_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:text="title"/>
+
+    <TextView
+        android:id="@+id/tv_music_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tv_music_title"
+        android:layout_marginTop="5dip"
+        android:textColor="#343434"
+        android:textSize="12sp"
+        android:text="artist"/>
+
+    <TextView
+        android:id="@+id/tv_music_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tv_music_artist"
+        android:layout_alignParentRight="true"
+        android:textColor="#343434"
+        android:textSize="12sp"
+        android:text="genre"/>
+
+</RelativeLayout>
