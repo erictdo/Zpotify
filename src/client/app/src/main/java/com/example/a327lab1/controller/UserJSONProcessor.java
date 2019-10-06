@@ -2,9 +2,9 @@ package com.example.a327lab1.controller;
 
 import android.content.Context;
 
-import com.example.a327lab1.models.Music;
-import com.example.a327lab1.models.Playlist;
-import com.example.a327lab1.models.User;
+import com.example.a327lab1.model.Music;
+import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.model.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;

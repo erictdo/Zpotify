@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.Music;
+import com.example.a327lab1.model.Music;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

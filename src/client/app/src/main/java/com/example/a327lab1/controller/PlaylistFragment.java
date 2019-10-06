@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.Playlist;
+import com.example.a327lab1.model.Playlist;
 
 import java.util.ArrayList;
 

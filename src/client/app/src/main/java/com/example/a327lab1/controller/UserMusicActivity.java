@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.Music;
+import com.example.a327lab1.model.Music;
 
 import java.util.ArrayList;
 

@@ -1,7 +1,5 @@
 //Work in Progress
-package com.example.a327lab1.models;
-
-import android.support.annotation.NonNull;
+package com.example.a327lab1.model;
 
 import com.google.gson.annotations.Expose;
 

@@ -1,4 +1,4 @@
-package com.example.a327lab1.models;
+package com.example.a327lab1.model;
 
 import com.google.gson.annotations.Expose;
 

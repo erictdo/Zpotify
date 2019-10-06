@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.User;
+import com.example.a327lab1.model.User;
 
 import java.util.Timer;
 import java.util.TimerTask;

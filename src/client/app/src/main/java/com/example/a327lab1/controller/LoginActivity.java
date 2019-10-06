@@ -10,7 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.User;
+import com.example.a327lab1.model.User;
 
 /**
  * Login Class Activity.

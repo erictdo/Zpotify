@@ -7,8 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
 import com.example.a327lab1.R;
-import com.example.a327lab1.models.Music;
-import com.example.a327lab1.models.Playlist;
+import com.example.a327lab1.model.Music;
+import com.example.a327lab1.model.Playlist;
 
 import java.util.ArrayList;
 
