@@ -68,22 +68,22 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
     public void onBindViewHolder(@NonNull MusicListAdapter.ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
 
-        holder.title.setText(listOfMusic.get(position).getSongTitle());
-        holder.artist.setText(listOfMusic.get(position).getArtistName());
+        holder.title.setText(listOfMusic.get(position).getSong().getTitle());
+        holder.artist.setText(listOfMusic.get(position).getArtist().getName());
         holder.terms.setText(listOfMusic.get(position).getArtist().getTerms());
 
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Play the music!
-                Log.d(TAG, "onClick: clicked on: " + listOfMusic.get(position).getSongTitle());
+                Log.d(TAG, "onClick: clicked on: " + listOfMusic.get(position).getSong().getTitle());
 
-                if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSongTitle())) {
+                if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
                     mp.release();
                     mp = MediaPlayer.create(context,R.raw.imperial);
                     mp.start();
-                    currentlyPlaying = listOfMusic.get(position).getSongTitle();
+                    currentlyPlaying = listOfMusic.get(position).getSong().getTitle();
                     Toast.makeText(context, currentlyPlaying + " is now playing.", Toast.LENGTH_SHORT).show();
                 } else if (mp != null){
                     mp.stop();
@@ -91,10 +91,10 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     mp = null;
                     Toast.makeText(context, "Stopped playing " + currentlyPlaying, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, listOfMusic.get(position).getSongTitle() + " is now playing.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, listOfMusic.get(position).getSong().getTitle() + " is now playing.", Toast.LENGTH_SHORT).show();
                     mp = MediaPlayer.create(context,R.raw.imperial);
                     mp.start();
-                    currentlyPlaying = listOfMusic.get(position).getSongTitle();
+                    currentlyPlaying = listOfMusic.get(position).getSong().getTitle();
                     Toast.makeText(context, "Stopped playing " + currentlyPlaying, Toast.LENGTH_SHORT).show();
                 }
 

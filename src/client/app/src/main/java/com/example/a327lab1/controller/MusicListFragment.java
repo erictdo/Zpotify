@@ -187,9 +187,9 @@ public class MusicListFragment extends Fragment {
     private ArrayList<Music> getSearchMusicList(String search) {
         ArrayList<Music> searchArray = new ArrayList<Music>();
         for (int i = 0 ; i < musicList.size() ; i++) {
-            if (musicList.get(i).getArtist().getArtistName().contains(search) ||
-                    musicList.get(i).getSong().getSongTitle().contains(search) ||
-                        musicList.get(i).getArtist().getTerms().contains(search)) {
+            if (musicList.get(i).getArtist().getName().contains(search) ||
+                    musicList.get(i).getSong().getTitle().contains(search) ||
+                    musicList.get(i).getArtist().getTerms().contains(search)) {
                 searchArray.add(musicList.get(i));
             }
         }

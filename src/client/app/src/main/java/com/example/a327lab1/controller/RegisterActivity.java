@@ -101,7 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
      * @param password user's password
      */
     private void addUserToJSON(String name, String password) {
-        User newUser = new User(name, password, new ArrayList<Playlist>(), getApplicationContext());
+        User newUser = new User(name, password, new ArrayList<Playlist>());
         userJSONProcessor.addUser(newUser);
     }
 }

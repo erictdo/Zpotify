@@ -103,7 +103,7 @@ public class UserJSONProcessor {
      */
     public boolean hasUserName(String name) {
         for (User myUser : listOfUsers) {
-            if (myUser.getNameOnly().equals(name)) {
+            if (myUser.getName().equals(name)) {
                 return true;
             }
         }
@@ -117,7 +117,7 @@ public class UserJSONProcessor {
      */
     public void addPlaylistToUser(String userName, String playlistName) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if ( listOfUsers.get(i).getNameOnly().equals(userName) ) {
+            if ( listOfUsers.get(i).getName().equals(userName) ) {
                 listOfUsers.get(i).addPlaylist(playlistName);
             }
         }
@@ -131,7 +131,7 @@ public class UserJSONProcessor {
      */
     public void deletePlaylistFromUser(String userName, String playlistName) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if ( listOfUsers.get(i).getNameOnly().equals(userName) ) {
+            if ( listOfUsers.get(i).getName().equals(userName) ) {
                 listOfUsers.get(i).deletePlaylist(i);
             }
         }
@@ -145,7 +145,7 @@ public class UserJSONProcessor {
      */
     public ArrayList<Playlist> getListOfPlaylistsFromUser(String userName) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if ( listOfUsers.get(i).getNameOnly().equals(userName) ) {
+            if ( listOfUsers.get(i).getName().equals(userName) ) {
                 User user = getUser(userName);
                 return user.getListOfPlaylists();
             }
@@ -161,7 +161,7 @@ public class UserJSONProcessor {
      */
     public void addMusicToPlaylist(String userName, String playlistName, Music music) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if (listOfUsers.get(i).getNameOnly().equals(userName)) {
+            if (listOfUsers.get(i).getName().equals(userName)) {
                 for (int j = 0 ; j < listOfUsers.get(i).getListOfPlaylists().size() ; j++) {
                     if (listOfUsers.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
                         listOfUsers.get(i).getListOfPlaylists().get(j).addMusicToPlaylist(music);
@@ -180,7 +180,7 @@ public class UserJSONProcessor {
      */
     public ArrayList<Music> getListOfMusicFromPlaylist(String userName, String playlistName) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if (listOfUsers.get(i).getNameOnly().equals(userName)) {
+            if (listOfUsers.get(i).getName().equals(userName)) {
                 for (int j = 0 ; j < listOfUsers.get(i).getListOfPlaylists().size() ; j++) {
                     if (listOfUsers.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
                         return listOfUsers.get(i).getListOfPlaylists().get(j).getListOfMusic();
@@ -199,7 +199,7 @@ public class UserJSONProcessor {
      */
     public void deleteMusicFromPlaylist(String userName, String playlistName, String musicID) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if (listOfUsers.get(i).getNameOnly().equals(userName)) {
+            if (listOfUsers.get(i).getName().equals(userName)) {
                 for (int j = 0 ; j < listOfUsers.get(i).getListOfPlaylists().size() ; j++) {
                     if (listOfUsers.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
                         for (int k = 0 ; k < listOfUsers.get(i).getListOfPlaylists().get(j).getListOfMusic().size() ; k++) {
@@ -222,7 +222,7 @@ public class UserJSONProcessor {
      */
     public void renamePlaylistName(String userName, String playlistName, String newPlaylistName) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if (listOfUsers.get(i).getNameOnly().equals(userName)) {
+            if (listOfUsers.get(i).getName().equals(userName)) {
                 for (int j = 0 ; j < listOfUsers.get(i).getListOfPlaylists().size() ; j++) {
                     if (listOfUsers.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
                         listOfUsers.get(i).getListOfPlaylists().get(j).setPlaylistName(newPlaylistName);
@@ -263,11 +263,11 @@ public class UserJSONProcessor {
      */
     public User getUser(String name) {
         for (int i = 0 ; i < listOfUsers.size() ; i++) {
-            if (listOfUsers.get(i).getNameOnly().equals(name)) {
+            if (listOfUsers.get(i).getName().equals(name)) {
                 return listOfUsers.get(i);
             }
         }
-        return new User(context);
+        return null;
     }
 
 }

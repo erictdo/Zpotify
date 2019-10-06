@@ -7,7 +7,7 @@
 * @since   2019-01-24 
 */
 
-package com.example.a327lab1.controller;
+package com.example.a327lab1.rpc;
 
 import java.io.EOFException;
 import java.io.File;

@@ -79,7 +79,7 @@ public class AddMusicToPlaylistAdapter extends RecyclerView.Adapter<AddMusicToPl
                 //Go to UserPlaylist screen
                 Log.d(TAG, "onClick: clicked on: " + playlistName);
 
-                Toast.makeText(context,  music.getSongTitle() + " has been added to " + playlistName, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,  music.getSong().getTitle() + " has been added to " + playlistName, Toast.LENGTH_SHORT).show();
 
                 userJSONProcessor.addMusicToPlaylist(userName, playlistName, music);
 

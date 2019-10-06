@@ -19,21 +19,6 @@ public class Music implements Serializable {
         this.song = song;
     }
 
-    public String getSongTitle()
-    {
-        return song.getSongTitle();
-    }
-
-    public String getReleaseDate()
-    {
-        return release.getReleaseDate();
-    }
-
-    public String getArtistName()
-    {
-        return artist.getArtistName();
-    }
-
     public Release getRelease() { return release; }
 
     public Artist getArtist() { return artist; }
