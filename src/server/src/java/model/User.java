@@ -1,7 +1,4 @@
-package com.example.a327lab1.models;
-
-import android.content.Context;
-import android.content.SharedPreferences;
+package java.model;
 
 import com.google.gson.annotations.Expose;
 
@@ -15,34 +12,18 @@ public class User {
     @Expose
     private ArrayList<Playlist> listOfPlaylists;
 
-    Context context;
-    SharedPreferences sharedPreferences;
-
-    public User(Context context) {
-        this.context = context;
-        sharedPreferences = context.getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-    }
-
-    public User(String name, String password, ArrayList<Playlist> listOfPlaylists, Context context) {
+    public User(String name, String password, ArrayList<Playlist> listOfPlaylists) {
         this.name = name;
         this.password = password;
         this.listOfPlaylists = listOfPlaylists;
-        this.context = context;
-        sharedPreferences = context.getSharedPreferences("userinfo", Context.MODE_PRIVATE);
-    }
-
-    public String getNameOnly() {
-        return name;
     }
 
     public String getName() {
-        name = sharedPreferences.getString("userdata","");
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-        sharedPreferences.edit().putString("userdata","name").commit();
     }
 
     public String getPassword() {
@@ -70,7 +51,4 @@ public class User {
         this.listOfPlaylists.remove(index);
     }
 
-    public void removeUser() {
-        sharedPreferences.edit().clear().commit();
-    }
 }

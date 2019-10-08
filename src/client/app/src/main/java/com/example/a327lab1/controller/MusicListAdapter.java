@@ -2,6 +2,8 @@ package com.example.a327lab1.controller;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,9 @@ import android.widget.Toast;
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
@@ -78,6 +83,14 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                 //Play the music!
                 Log.d(TAG, "onClick: clicked on: " + listOfMusic.get(position).getSong().getTitle());
 
+                try {
+                    FileDescriptor fd = new FileDescriptor();
+                    AssetManager am = context.getAssets();
+                    AssetFileDescriptor afd = am.openFd("imperial.mp3");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
                     mp.release();
@@ -122,6 +135,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
         /**
          * View Holder for the Music List Adapter.
+         *
          * @param itemView music information
          */
         public ViewHolder(View itemView) {
@@ -136,8 +150,9 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
         /**
          * Method to create a pop up menu to add songs.
-         * @param menu menu of the pop up
-         * @param v view of the menu
+         *
+         * @param menu     menu of the pop up
+         * @param v        view of the menu
          * @param menuInfo menu info
          */
         @Override

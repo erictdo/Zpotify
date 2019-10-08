@@ -1,7 +1,4 @@
-//Work in Progress
-package com.example.a327lab1.models;
-
-import android.support.annotation.NonNull;
+package java.model;
 
 import com.google.gson.annotations.Expose;
 
@@ -19,21 +16,6 @@ public class Music implements Serializable {
         this.release = release;
         this.artist = artist;
         this.song = song;
-    }
-
-    public String getSongTitle()
-    {
-        return song.getSongTitle();
-    }
-
-    public String getReleaseDate()
-    {
-        return release.getReleaseDate();
-    }
-
-    public String getArtistName()
-    {
-        return artist.getArtistName();
     }
 
     public Release getRelease() { return release; }

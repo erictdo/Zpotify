@@ -1,4 +1,4 @@
-
+package java.core;
 
 public interface DispatcherInterface {
 /*
