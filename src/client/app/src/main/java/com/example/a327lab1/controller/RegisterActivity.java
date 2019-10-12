@@ -1,5 +1,7 @@
 package com.example.a327lab1.controller;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -11,6 +13,9 @@ import android.widget.Toast;
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Playlist;
 import com.example.a327lab1.model.User;
+import com.example.a327lab1.rpc.Proxy;
+import com.example.a327lab1.data.Session;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
@@ -24,6 +29,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText userName, userPassword, userPasswordConfirm;
     private Button registerButton;
     private TextView navToLogin;
+    static Session session;
+    AssetManager am;
+    public static Context cxt;
 
     /**
      * Method to create and store a new user in JSON.
@@ -35,21 +43,35 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         initUIViews();
+        cxt = getApplicationContext();
+        am = cxt.getAssets();
 
-        userJSONProcessor = new UserJSONProcessor(this);
+//        userJSONProcessor = new UserJSONProcessor(this);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //Get user input
-                String name = userName.getText().toString();
-                String password = userPassword.getText().toString();
-                String passwordConfirm = userPasswordConfirm.getText().toString();
+//                String name = userName.getText().toString();
+//                String password = userPassword.getText().toString();
+//                String passwordConfirm = userPasswordConfirm.getText().toString();
 
-                if (validate(name, password, passwordConfirm)){
-                    addUserToJSON(name, password);
-                    finish();
+                JsonObject ret;
+                Proxy proxy = new Proxy(cxt);
+                String[] array = {
+                        session.getUsername().toString(),
+                        session.getPassword().toString()};
+                ret = proxy.synchExecution("SignUp", array);
+                if(!ret.toString().equals("{}")) {
+//                    signUp(v);
                 }
+                else {
+                    Toast.makeText(RegisterActivity.this, "Username already exist, please try another name", Toast.LENGTH_LONG).show();
+                }
+//                if (validate(name, password, passwordConfirm)){
+//                    addUserToJSON(name, password);
+//                    finish();
+//                }
             }
         });
 

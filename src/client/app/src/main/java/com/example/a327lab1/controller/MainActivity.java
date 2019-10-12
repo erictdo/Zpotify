@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView userName;
     private Toolbar toolbar;
 
-    public UserJSONProcessor userJSONProcessor;
+    //public UserJSONProcessor userJSONProcessor;
 
     /**
      * Method to display the home page.
@@ -119,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onResume()
     {
         super.onResume();
-        userJSONProcessor = new UserJSONProcessor(this);
+        //userJSONProcessor = new UserJSONProcessor(this);
     }
 
 }
