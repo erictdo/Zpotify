@@ -1,17 +1,15 @@
-package java.core;
+package main.java.core;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.FileReader;
 import java.io.FileInputStream;
 import java.io.File;
 import java.util.Base64;
 import java.io.FileNotFoundException;
 
-public class SongDispatcher {
+public class MP3Service {
   static final int FRAGMENT_SIZE = 8192;
 
-  public SongDispatcher() {
+  public MP3Service() {
 
   }
 

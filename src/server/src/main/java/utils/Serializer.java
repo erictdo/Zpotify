@@ -1,16 +1,14 @@
-package java.util;
+package main.java.utils;
 
 import com.google.gson.*;
+import main.java.model.User;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.model.Playlist;
-import java.model.User;
-import java.net.URL;
+import java.util.List;
 
 public class Serializer {
-    public void updateUserJson(List<User> users) {
+    public static void updateUserJson(List<User> users) {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
         String json = gson.toJson(users);
         try {

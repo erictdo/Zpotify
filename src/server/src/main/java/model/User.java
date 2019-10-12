@@ -1,4 +1,4 @@
-package java.model;
+package main.java.model;
 
 import com.google.gson.annotations.Expose;
 

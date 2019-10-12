@@ -1,15 +1,13 @@
-package java.core;
+package main.java.core;
 
 import java.util.HashMap;
 import java.util.*;
 import java.lang.reflect.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Base64;
-import com.google.gson.Gson;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 
 public class Dispatcher implements DispatcherInterface {
@@ -97,33 +95,33 @@ public class Dispatcher implements DispatcherInterface {
      * 
      * @param remoteMethod: It is the name of the method that objectName implements.
      * 
-     * @objectName: It is the main class that contaions the remote methods each
+     * @objectName: It is the main class that contains the remote methods each
      * object can contain several remote methods
      */
     public void registerObject(Object remoteMethod, String objectName) {
         ListOfObjects.put(objectName, remoteMethod);
     }
 
-    public static void main(String[] args) {
-        // Instance of the Dispatcher
-        Dispatcher dispatcher = new Dispatcher();
-        // Instance of the services that te dispatcher can handle
-        SongDispatcher songDispatcher = new SongDispatcher();
-
-        dispatcher.registerObject(songDispatcher, "SongServices");
-
-        // Testing the dispatcher function
-        // First we read the request. In the final implementation the jsonRequest
-        // is obtained from the communication module
-        try {
-            String jsonRequest = new String(Files.readAllBytes(Paths.get("./getSongChunk.json")));
-            String ret = dispatcher.dispatch(jsonRequest);
-            System.out.println(ret);
-
-            // System.out.println(jsonRequest);
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
-    }
+//    public static void main(String[] args) {
+//        // Instance of the Dispatcher
+//        Dispatcher dispatcher = new Dispatcher();
+//        // Instance of the services that te dispatcher can handle
+//        MP3Service songDispatcher = new MP3Service();
+//
+//        dispatcher.registerObject(songDispatcher, "SongServices");
+//
+//        // Testing the dispatcher function
+//        // First we read the request. In the final implementation the jsonRequest
+//        // is obtained from the communication module
+//        try {
+//            String jsonRequest = new String(Files.readAllBytes(Paths.get("./getSongChunk.json")));
+//            String ret = dispatcher.dispatch(jsonRequest);
+//            System.out.println(ret);
+//
+//            // System.out.println(jsonRequest);
+//        } catch (Exception e) {
+//            System.out.println(e);
+//        }
+//
+//    }
 }
