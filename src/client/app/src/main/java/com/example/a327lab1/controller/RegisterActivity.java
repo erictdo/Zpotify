@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
                         session.getPassword().toString()};
                 ret = proxy.synchExecution("SignUp", array);
                 if(!ret.toString().equals("{}")) {
-//                    signUp(v);
+                    finish();
                 }
                 else {
                     Toast.makeText(RegisterActivity.this, "Username already exist, please try another name", Toast.LENGTH_LONG).show();
