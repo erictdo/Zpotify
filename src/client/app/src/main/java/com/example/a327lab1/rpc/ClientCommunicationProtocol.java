@@ -1,5 +1,6 @@
 package com.example.a327lab1.rpc;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -12,130 +13,142 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.concurrent.ExecutionException;
 
-public class ClientCommunicationProtocol {
+public class ClientCommunicationProtocol extends AsyncTask<String, Void, String> {
+    private static final int PORT = 5000;
+    private static final int TIMEOUT_DURATION = 20000;
 
-    private DatagramSocket datagramSocket;
-    private InetAddress host;
-    final int PORT = 1234;
-    JsonObject ret;
+    private DatagramSocket clientSocket;
+    private InetAddress ipAddress;
+    private JsonObject ret;
 
-    public ClientCommunicationProtocol()
-    {
-        try
-        {
-            datagramSocket = new DatagramSocket();
-            host = InetAddress.getByName("10.0.2.2");
-            datagramSocket.setSoTimeout(200);   // set the timeout in millisecounds.
-        }
-        catch(SocketException e)
-        {
-            Log.d("Exception", "CM DS constructor");
-            Log.d("Exception", "CM DS constructor");
+    public ClientCommunicationProtocol() {
+        try {
+            clientSocket = new DatagramSocket();
+            clientSocket.setSoTimeout(TIMEOUT_DURATION);
+            ipAddress = getLocalHost();
 
-        }
-        catch(UnknownHostException e)
-        {
-
+        } catch (SocketException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
+    @Override
+    protected String doInBackground(String... strings) {
+        return null;
+    }
+
     public void send(JsonObject request) {
-        DatagramPacket outPacket;
         try {
-
             String message = request.toString();
+            String callSemantic = ((request).get("call semantics").getAsString());
 
-            String callSemantic = ((request).get("call-semantics").getAsString());
+            DatagramPacket outPacket = new DatagramPacket(message.getBytes(), message.length(), ipAddress, PORT);
 
-            if(callSemantic.equals("at-least-one"))
-            {
+            if (callSemantic.equals("at-least-one")) {
                 String reply = "invalid";
-                while (reply.equals("invalid"))
-                {
+                while (reply.equals("invalid")) {
                     //JSONObject response;
-                    outPacket = new DatagramPacket(message.getBytes(), message.length(), host, PORT);
-                    datagramSocket.send(outPacket);
+                    clientSocket.send(outPacket);
                     ret = null;
                     try {
                         ret = receive();
-                        if (ret != null)
-                        {
+                        if (ret != null) {
                             reply = "valid";
                         }
-                    }
-                    catch (SocketTimeoutException e) {
+                    } catch (SocketTimeoutException e) {
                         Log.d("RETCM", "Timeout achieved");
-                        datagramSocket.close();
+                        clientSocket.close();
                     }
                 }
-
-            }
-            else if (callSemantic.equals("at-most-one"))
-            {
+            } else if (callSemantic.equals("at-most-one")) {
                 String requestSent = "invalid";
-                while(requestSent.equals("invalid"))
-                {
-                    outPacket = new DatagramPacket(message.getBytes(), message.length(), host, PORT);
-                    datagramSocket.send(outPacket);
+                while (requestSent.equals("invalid")) {
+                    clientSocket.send(outPacket);
                     requestSent = "valid";
 
                     ret = null;
 
                     try {
                         ret = receive();
-                        if (ret == null)
-                        {
+                        if (ret == null) {
                             requestSent = "invalid";
                         }
-                    }
-                    catch (SocketTimeoutException e) {
+                    } catch (SocketTimeoutException e) {
                         Log.d("RETCM", "Timeout achieved");
-                        datagramSocket.close();
+                        clientSocket.close();
                     }
-
                 }
-            }
-            else if (callSemantic.equals("maybe"))
-            {
-                outPacket = new DatagramPacket(message.getBytes(), message.length(), host, PORT);
-                datagramSocket.send(outPacket);
+            } else if (callSemantic.equals("maybe")) {
+                clientSocket.send(outPacket);
                 ret = receive();
-
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
 
-    public JsonObject receive() throws SocketTimeoutException
-
-    {
-
-        DatagramPacket inPacket;
+    public JsonObject receive() throws SocketTimeoutException {
         JsonObject response = null;
-        byte[] buffer;
         try {
-
-            //MAX to be received
-            buffer = new byte[65000];
-            inPacket = new DatagramPacket(buffer, buffer.length);
-            datagramSocket.receive(inPacket);
+            byte[] buffer = new byte[65000];
+            DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
+            clientSocket.receive(inPacket);
             response = new Gson().fromJson(new String(inPacket.getData(), 0, inPacket.getLength()), JsonObject.class);
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
-        catch(IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return response;
 
     }
-    public JsonObject getRet()
-    {
+
+    public JsonObject getRet() {
         return ret;
     }
+
+    public static InetAddress getLocalHost() {
+        AsyncTask<String, Void, InetAddress> task = new AsyncTask<String, Void, InetAddress>() {
+            @Override
+            protected InetAddress doInBackground(String... params) {
+                try {
+                    return InetAddress.getByName("localhost");
+                } catch (UnknownHostException e) {
+                    return null;
+                }
+            }
+        };
+        try {
+            return task.execute().get();
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            return null;
+        }
+    }
+
+//    public static class SendRunnable implements Runnable {
+//        private DatagramSocket clientSocket;
+//        private DatagramPacket outPacket;
+//        private InetAddress ipAddress;
+//        private JsonObject ret;
+//
+//        private String message;
+//        private String callSemantic;
+//
+//
+//        public SendRunnable(String message, String callSemantic) {
+//            this.message = message;
+//            this.callSemantic = callSemantic;
+//        }
+//
+//        public void run() {
+//
+//        }
+//    }
+
 }

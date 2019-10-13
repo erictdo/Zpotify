@@ -9,41 +9,46 @@ package com.example.a327lab1.rpc;
  */
 
 import android.content.Context;
-import android.util.Log;
+import android.content.res.AssetManager;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
+import java.io.InputStream;
 
-public class Proxy implements ProxyInterface {
-    ClientCommunicationProtocol cm;
-    private static int requestID = 1;
-    Context context;
-    public Proxy(Context cxt)
+
+public class Proxy {
+    private static final int PORT = 5000;
+    private Context context;
+    private ClientCommunicationProtocol ccp;
+
+    public Proxy(Context context)
     {
-        cm = new ClientCommunicationProtocol();
-        this.context = cxt;
+        ccp = new ClientCommunicationProtocol();
+        this.context = context;
     }
 
-    /*
+    /**
      * Executes the  remote method "remoteMethod". The method blocks until
      * it receives the reply of the message.
      */
-    public JsonObject synchExecution(String remoteMethod, String[] param)
+    public synchronized JsonObject synchExecution(String remoteMethod, String[] param)
     {
-        RemoteRef rr = new RemoteRef(context);
-        //first part of the jsonobject meant to be sent to the server
-        JsonObject metadata = rr.getRemoteReference(remoteMethod);
-        //create jsonobject of parameters
-        JsonObject jsonparam = new JsonObject();
+        RemoteReference rr = new RemoteReference(context);
+        JsonObject jsonRequest = rr.getRemoteReference(remoteMethod);
+        JsonObject jsonParam = new JsonObject();
+
+        //Setting method params
         for (int i = 0; i < param.length; i++) {
-            jsonparam.addProperty(Integer.toString(i), param[i]);
+            jsonParam.addProperty(Integer.toString(i), param[i]);
         }
 
-        metadata.add("param", jsonparam);
-        metadata.addProperty("requestID", Integer.toString(requestID));
-        cm.send(metadata);
-        requestID += 1;
-        JsonObject ret = cm.getRet();
+        jsonRequest.add("param", jsonParam);
+        //jsonRequest.addProperty("requestID", Integer.toString(requestID));
+        ccp.send(jsonRequest);
+        JsonObject ret = ccp.getRet();
 
         return ret;
     }
@@ -58,10 +63,6 @@ public class Proxy implements ProxyInterface {
     {
         return;
     }
-
-
-
-
 }
 
 

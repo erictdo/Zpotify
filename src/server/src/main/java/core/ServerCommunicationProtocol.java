@@ -8,25 +8,18 @@ import java.io.*;
 import java.net.*;
 
 public class ServerCommunicationProtocol extends Thread {
-
+    private static final int PORT = 5000;
     private static final int FRAGMENT_SIZE = 8192;
     private byte[] buffer = new byte[FRAGMENT_SIZE];
 
     private DatagramSocket serverSocket;
     private DatagramPacket inPacket;
-    private DataInputStream inputStream;
-    private DataOutputStream outputStream;
     private Dispatcher dispatcher;
-    private int port;
 
     /**
      * Constructor for the ServerCommunicationProtocol
-     *
-     * @param num
      */
-    public ServerCommunicationProtocol(int num) {
-        this.port = num;
-    }
+    public ServerCommunicationProtocol() { }
 
     /**
      * Communication Initialization before listening for requests
@@ -34,8 +27,8 @@ public class ServerCommunicationProtocol extends Thread {
     private void connect() {
         try {
             //Connecting to port
-            serverSocket = new DatagramSocket(this.port);
-            System.out.println("Socket opened on port: " + this.port);
+            serverSocket = new DatagramSocket(PORT);
+            System.out.println("Socket opened on port: " + PORT);
 
             //Register Objects & Methods on Dispatcher
             dispatcher = new Dispatcher();
@@ -53,7 +46,7 @@ public class ServerCommunicationProtocol extends Thread {
      * Listening for a request from client
      */
     private void listen() {
-        System.out.println("Server listening.");
+        System.out.println("Server listening...");
         try {
             while (true) {
                 //Receiving Request Packet
@@ -129,19 +122,6 @@ public class ServerCommunicationProtocol extends Thread {
                 serverSocket.send(outPacket);
                 JsonObject ret;
 
-//      if (callSemantic.equals("at-most-one")) {
-//        if (attendedReq.containsKey(jsonIn.get("requestID").getAsString())) {
-//          send(attendedReq.get(jsonIn.get("requestID").getAsString()), clientAddress, clientPort);
-//        } else {
-//          ret = new Gson().fromJson((dispatcher.dispatch(messageIn)).get("ret").getAsString(),JsonObject.class);
-//          attendedReq.put(jsonIn.get("requestID").toString(), ret);
-//          send(ret, clientAddress, clientPort);
-//        }
-//      } else {
-//        ret = new Gson().fromJson((dispatcher.dispatch(messageIn)).get("ret").getAsString(),JsonObject.class);
-//        send(ret, clientAddress, clientPort);
-//      }
-
                 System.out.println(Thread.getAllStackTraces().keySet());
                 System.out.println("Sending response to client: " + clientAddress + "\n");
 
@@ -155,15 +135,3 @@ public class ServerCommunicationProtocol extends Thread {
     }
 
 }
-
-/* --- NOTES ---
-
-"Method" Json Object (Check methods.json in client side)
-
-Object: Method
-Values:
-  remoteMethod - The method (from one of the services) being called
-  object - The name of the service (UserService, MusicService, or MP3 Service)
-  call-semantics - The type of call-semantics (maybe, at-least-one, at-most-one)
-
- */

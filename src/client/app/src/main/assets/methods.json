@@ -1,14 +1,25 @@
 {
   "methods" : [
     {
-      "remoteMethod": "Login",
+      "remoteMethod": "login",
       "object": "UserService",
-      "call semantics": "maybe"
+      "call semantics": "maybe",
+      "param":
+      {
+        "username": "",
+        "password": ""
+      }
     },
     {
-      "remoteMethod": "SignUp",
+      "remoteMethod": "register",
       "object": "UserService",
-      "call semantics": "maybe"
+      "call semantics": "maybe",
+      "param":
+      {
+        "username": "",
+        "password": "",
+        "passwordConfirm": ""
+      }
     },
     {
       "remoteMethod": "getUser",

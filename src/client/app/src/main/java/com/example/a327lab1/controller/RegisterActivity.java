@@ -1,6 +1,8 @@
 package com.example.a327lab1.controller;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +13,8 @@ import android.widget.Toast;
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Playlist;
 import com.example.a327lab1.model.User;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 
@@ -18,6 +22,7 @@ import java.util.ArrayList;
  * Registration Activity for the application.
  */
 public class RegisterActivity extends AppCompatActivity {
+    private static Context cxt;
 
     private UserJSONProcessor userJSONProcessor;
 
@@ -34,6 +39,9 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
+
         initUIViews();
 
         userJSONProcessor = new UserJSONProcessor(this);
@@ -46,10 +54,28 @@ public class RegisterActivity extends AppCompatActivity {
                 String password = userPassword.getText().toString();
                 String passwordConfirm = userPasswordConfirm.getText().toString();
 
-                if (validate(name, password, passwordConfirm)){
-                    addUserToJSON(name, password);
+                JsonObject ret;
+                Proxy proxy = new Proxy(RegisterActivity.this);
+                String[] params = {
+                        name,
+                        password,
+                        passwordConfirm
+                };
+                ret = proxy.synchExecution("register", params);
+
+                if (ret == null){
+                    Toast.makeText(RegisterActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
+                } else if (!ret.toString().equals("{}")) {
+                    Toast.makeText(RegisterActivity.this, "Your account has been made. Please login.", Toast.LENGTH_SHORT).show();
                     finish();
+                } else {
+                    Toast.makeText(RegisterActivity.this, "Invalid inputs. Try again.", Toast.LENGTH_SHORT).show();
                 }
+
+//                if (validate(name, password, passwordConfirm)){
+//                    addUserToJSON(name, password);
+//                    finish();
+//                }
             }
         });
 

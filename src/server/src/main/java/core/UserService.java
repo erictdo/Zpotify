@@ -3,11 +3,13 @@ package main.java.core;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import main.java.model.Playlist;
 import main.java.model.User;
 import main.java.utils.Deserializer;
 import main.java.utils.Serializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,35 +26,57 @@ public class UserService extends Dispatcher {
     }
 
     /**
-     * Refreshes User list
-     */
-    public void refreshUserList() {
-        userList = deserializer.deserializeUsersFromJson();
-    }
-
-    /**
-     * Updates the users.json file with the current userList
-     */
-    public void updateUserDatabase() {
-        Serializer.updateUserJson(userList);
-    }
-
-    /**
      * Return User as JSON Object, or empty String if user is not valid
      *
      * @param username the username from client
      * @param password the password from client
      */
     public String login(String username, String password) throws IOException {
+        System.out.println("Logging in: Checking if User exists...");
+
         User validUser = checkValidUser(username, password);
         if (validUser != null) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String userJsonString = gson.toJson(validUser);
+            JsonObject userObject = new JsonObject();
+            userObject.add("user", userObject);
             return userJsonString;
         } else {
-            System.out.println("User credentials did not match in the database. Returning Empty Json Object");
+            System.out.println("User credentials were not found in the database. Returning Empty Json Object");
             return (new JsonObject()).toString();
         }
+    }
+
+    public String register(String name, String password, String passwordConfirm) {
+        System.out.println("Checking if User exists...");
+
+        boolean userExists = checkHasUser(name);
+        if (userExists) {
+            System.out.println("User does not exist. Creating account: " + name);
+
+            User newUser = new User(name, password, new ArrayList<Playlist>());
+            userList.add(newUser);
+            updateUserDatabase();
+
+            JsonObject isRegisteredObj = new JsonObject();
+            isRegisteredObj.addProperty("IsRegistered", true);
+
+            System.out.println("User successfully created: " + name);
+            return isRegisteredObj.toString();
+
+        } else {
+            System.out.println("User already exists. Returning empty Object");
+            return (new JsonObject()).toString();
+        }
+    }
+
+    /** ~ Helper methods are below ~ */
+
+    /**
+     * Updates the users.json file with the current userList
+     */
+    private void updateUserDatabase() {
+        Serializer.updateUserJson(userList);
     }
 
     /**
@@ -61,7 +85,7 @@ public class UserService extends Dispatcher {
      * @param name Username being searched
      * @return User if user exists; Null otherwise
      */
-    public User checkValidUser(String name, String password) {
+    private User checkValidUser(String name, String password) {
         for (int i = 0; i < userList.size(); i++) {
             if (userList.get(i).getName().equals(name) && userList.get(i).getPassword().equals(password)) {
                 return userList.get(i);
@@ -70,5 +94,18 @@ public class UserService extends Dispatcher {
         return null;
     }
 
+    /**
+     * Checks if User exists in the user list
+     * @param name  User name being checked
+     * @return True if user exists; false otherwise
+     */
+    private boolean checkHasUser(String name) {
+        for (int i = 0; i < userList.size(); i++) {
+            if (userList.get(i).getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

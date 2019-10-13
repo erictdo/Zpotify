@@ -28,7 +28,6 @@ public class Session  {
     public void setLoginTrue(String login) {
         pref.edit().putBoolean("Login", true).apply();
     }
-
     public void setLoginFalse(String login) {
         pref.edit().putBoolean("Login", false).apply();
     }
@@ -36,7 +35,6 @@ public class Session  {
     public void setUsername(String username) {
         pref.edit().putString("username", username).apply();
     }
-
     public String getUsername() {
         return pref.getString("username", "");
     }
@@ -44,7 +42,6 @@ public class Session  {
     public void setPassword(String password) {
         pref.edit().putString("password", password).apply();
     }
-
     public String getPassword() {
         return pref.getString("password", "");
     }
@@ -53,7 +50,6 @@ public class Session  {
         Boolean login = pref.getBoolean("Login", false);
         return login;
     }
-
     public MediaPlayer getMediaPlayer()
     {
         return this.mp;
