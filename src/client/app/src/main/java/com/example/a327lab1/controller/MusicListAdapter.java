@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
+import android.media.MediaDataSource;
 import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -19,17 +20,46 @@ import android.widget.Toast;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
+import com.example.a327lab1.rpc.CECS327InputStream;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
 /**
  * Classs to show the recycle view of the music list.
  */
-public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder> {
 
+class AudioMediaSource extends MediaDataSource{
+
+    private InputStream inputStream;
+    private String fileName;
+    //private CECS327InputStream is;
+
+    public AudioMediaSource(InputStream fileName){
+
+        inputStream = fileName;
+    }
+
+    @Override
+    public int readAt(long l, byte[] bytes, int i, int i1) throws IOException {
+        return inputStream.read(bytes, i, i1);
+    }
+
+    @Override
+    public long getSize() throws IOException {
+        return 0;
+    }
+
+    @Override
+    public void close() throws IOException {
+        inputStream.close();
+    }
+}
+
+public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder> {
     private static final String TAG = "MusicListAdapter";
     private MediaPlayer mp;
     private ArrayList<Music> listOfMusic;
@@ -87,11 +117,18 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     FileDescriptor fd = new FileDescriptor();
                     AssetManager am = context.getAssets();
                     AssetFileDescriptor afd = am.openFd("imperial.mp3");
+
+                    mp = new MediaPlayer();
+                    MediaDataSource mds = new AudioMediaSource(am.open("imperial.mp3"));
+
+                    mp.setDataSource(mds);
+                    mp.prepareAsync();
+                    mp.start();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
+                /*if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
                     mp.release();
                     mp = MediaPlayer.create(context,R.raw.imperial);
@@ -109,7 +146,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     mp.start();
                     currentlyPlaying = listOfMusic.get(position).getSong().getTitle();
                     Toast.makeText(context, "Stopped playing " + currentlyPlaying, Toast.LENGTH_SHORT).show();
-                }
+                }*/
 
             }
         });
