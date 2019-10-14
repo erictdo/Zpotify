@@ -18,7 +18,7 @@ import java.util.List;
 public class UserService extends Dispatcher {
     private static final int FRAGMENT_SIZE = 8192;
     private Deserializer deserializer;
-    private List<User> userList;
+    private ArrayList<User> userList;
 
     public UserService() {
         deserializer = new Deserializer();
@@ -38,15 +38,22 @@ public class UserService extends Dispatcher {
         if (validUser != null) {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
             String userJsonString = gson.toJson(validUser);
-            JsonObject userObject = new JsonObject();
-            userObject.add("user", userObject);
-            return userJsonString;
+            JsonObject userJO = new JsonObject();
+            userJO.add("user", userJO);
+            return userJO.toString();
         } else {
             System.out.println("User credentials were not found in the database. Returning Empty Json Object");
             return (new JsonObject()).toString();
         }
     }
 
+    /**
+     * Registers a new user into the user database
+     * @param name              User name
+     * @param password          User password
+     * @param passwordConfirm   Repeated user password
+     * @return
+     */
     public String register(String name, String password, String passwordConfirm) {
         System.out.println("Checking if User exists...");
 
@@ -58,16 +65,35 @@ public class UserService extends Dispatcher {
             userList.add(newUser);
             updateUserDatabase();
 
-            JsonObject isRegisteredObj = new JsonObject();
-            isRegisteredObj.addProperty("IsRegistered", true);
+            JsonObject isRegisteredJO = new JsonObject();
+            isRegisteredJO.addProperty("IsRegistered", true);
 
             System.out.println("User successfully created: " + name);
-            return isRegisteredObj.toString();
+            return isRegisteredJO.toString();
 
         } else {
             System.out.println("User already exists. Returning empty Object");
             return (new JsonObject()).toString();
         }
+    }
+
+    /**
+     * Adds a new playlist to the user's account
+     * @param userName      User's name
+     * @param playlistName  Playlist name being added
+     * @return
+     */
+    public String addPlaylist(String userName, String playlistName) {
+        System.out.println("Adding Playlist" + playlistName + " to " + userName + "'s profile");
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                userList.get(i).addPlaylist(playlistName);
+                JsonObject playlistJO = new JsonObject();
+                playlistJO.add("playlist", playlistJO);
+                return playlistJO.toString();
+            }
+        }
+        return (new JsonObject()).toString();
     }
 
     /** ~ Helper methods are below ~ */
@@ -82,8 +108,8 @@ public class UserService extends Dispatcher {
     /**
      * Searches for username in the userList
      *
-     * @param name Username being searched
-     * @return User if user exists; Null otherwise
+     * @param name  Username being searched
+     * @return      User if user exists; Null otherwise
      */
     private User checkValidUser(String name, String password) {
         for (int i = 0; i < userList.size(); i++) {
@@ -97,7 +123,7 @@ public class UserService extends Dispatcher {
     /**
      * Checks if User exists in the user list
      * @param name  User name being checked
-     * @return True if user exists; false otherwise
+     * @return      True if user exists; false otherwise
      */
     private boolean checkHasUser(String name) {
         for (int i = 0; i < userList.size(); i++) {
@@ -106,6 +132,20 @@ public class UserService extends Dispatcher {
             }
         }
         return false;
+    }
+
+    /**
+     * Gets the user object from passing in username
+     * @param userName      User name
+     * @return              User object
+     */
+    public User getUser(String userName) {
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                return userList.get(i);
+            }
+        }
+        return null;
     }
 
 }

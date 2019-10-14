@@ -10,7 +10,6 @@ import main.java.model.*;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Deserializer {
   public InputStream MUSIC_FILE;
@@ -30,8 +29,8 @@ public class Deserializer {
    *
    * @return A dictionary of existing songs.
    */
-  public List<Music> deserializeSongsFromJson() {
-    List<Music> songs = new ArrayList<>();
+  public ArrayList<Music> deserializeSongsFromJson() {
+    ArrayList<Music> songs = new ArrayList<>();
 
     Gson gson = new Gson();
     BufferedReader br = new BufferedReader(new InputStreamReader(MUSIC_FILE));
@@ -55,8 +54,8 @@ public class Deserializer {
    * 
    * @return ArrayList of Users from user.json file
    */
-  public List<User> deserializeUsersFromJson() {
-    List<User> users = new ArrayList<>();
+  public ArrayList<User> deserializeUsersFromJson() {
+    ArrayList<User> users = new ArrayList<>();
 
     Gson gson = new Gson();
     BufferedReader br = new BufferedReader(new InputStreamReader(USER_FILE));

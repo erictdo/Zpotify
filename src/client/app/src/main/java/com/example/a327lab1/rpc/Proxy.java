@@ -20,7 +20,7 @@ import java.io.InputStream;
 
 
 public class Proxy {
-    private static final int PORT = 5000;
+    private static final int PORT = 9999;
     private Context context;
     private ClientCommunicationProtocol ccp;
 
@@ -46,7 +46,6 @@ public class Proxy {
         }
 
         jsonRequest.add("param", jsonParam);
-        //jsonRequest.addProperty("requestID", Integer.toString(requestID));
         ccp.send(jsonRequest);
         JsonObject ret = ccp.getRet();
 

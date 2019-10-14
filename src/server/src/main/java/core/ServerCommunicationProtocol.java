@@ -8,7 +8,7 @@ import java.io.*;
 import java.net.*;
 
 public class ServerCommunicationProtocol extends Thread {
-    private static final int PORT = 5000;
+    private static final int PORT = 9999;
     private static final int FRAGMENT_SIZE = 8192;
     private byte[] buffer = new byte[FRAGMENT_SIZE];
 

@@ -15,9 +15,9 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
-public class ClientCommunicationProtocol extends AsyncTask<String, Void, String> {
+public class ClientCommunicationProtocol {
     private static final int PORT = 5000;
-    private static final int TIMEOUT_DURATION = 20000;
+    private static final int TIMEOUT_DURATION = 5000; // 5 seconds
 
     private DatagramSocket clientSocket;
     private InetAddress ipAddress;
@@ -34,11 +34,6 @@ public class ClientCommunicationProtocol extends AsyncTask<String, Void, String>
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected String doInBackground(String... strings) {
-        return null;
     }
 
     public void send(JsonObject request) {

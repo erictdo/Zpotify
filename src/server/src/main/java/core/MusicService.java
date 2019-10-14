@@ -22,11 +22,12 @@ public class MusicService extends Dispatcher {
     }
 
     /**
-     * Return Song as JSON Object
+     * Gets all the songs from the song database
      */
-    public String getAllMusic() throws IOException {
+    public String getMusic() throws IOException {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         String musicListJsonString = gson.toJson(musicList);
         return musicListJsonString;
     }
+
 }

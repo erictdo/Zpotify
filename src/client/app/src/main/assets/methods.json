@@ -27,34 +27,51 @@
       "call semantics": "at-least-one"
     },
     {
-      "remoteMethod": "returnSongs",
-      "object": "MusicService",
-      "call semantics": "at-least-one"
-    },
-    {
-      "remoteMethod": "searchSong",
+      "remoteMethod": "getMusic",
       "object": "MusicService",
       "call semantics": "at-least-one"
     },
     {
       "remoteMethod": "addPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one"
+      "call semantics": "at-most-one",
+      "param":
+      {
+        "userName": "",
+        "playlistName": ""
+      }
     },
     {
       "remoteMethod": "deletePlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one"
+      "call semantics": "at-most-one",
+      "param":
+      {
+        "userName": "",
+        "playlistName": ""
+      }
     },
     {
       "remoteMethod": "addSongToPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one"
+      "call semantics": "at-most-one",
+      "param":
+      {
+        "songName": "",
+        "userName": "",
+        "playlistName": ""
+      }
     },
     {
       "remoteMethod": "deleteSongFromPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one"
+      "call semantics": "at-most-one",
+      "param":
+      {
+        "songName": "",
+        "userName": "",
+        "playlistName": ""
+      }
     },
     {
       "remoteMethod": "MP3Handler",
