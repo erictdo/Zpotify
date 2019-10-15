@@ -56,23 +56,26 @@ public class Deserializer {
    */
   public ArrayList<User> deserializeUsersFromJson() {
     ArrayList<User> users = new ArrayList<>();
+    try {
+      Gson gson = new Gson();
+      //BufferedReader br = new BufferedReader(new InputStreamReader(USER_FILE));
+      BufferedReader br = new BufferedReader(new FileReader(new File("user.json")));
 
-    Gson gson = new Gson();
-    BufferedReader br = new BufferedReader(new InputStreamReader(USER_FILE));
+      JsonArray jsonArray = gson.fromJson(br, JsonArray.class);
+      if (jsonArray != null) {
+        for (JsonElement jsonElement : jsonArray) {
+          JsonObject jsonObject = jsonElement.getAsJsonObject();
+          String name = gson.fromJson(jsonObject.get("name"), String.class);
+          String password = gson.fromJson(jsonObject.get("password"), String.class);
 
-    JsonArray jsonArray = gson.fromJson(br, JsonArray.class);
-    if (jsonArray != null) {
-      for (JsonElement jsonElement : jsonArray) {
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
-        String name = gson.fromJson(jsonObject.get("name"), String.class);
-        String password = gson.fromJson(jsonObject.get("password"), String.class);
+          Type playlistType = new TypeToken<ArrayList<Playlist>>() {}.getType();
+          ArrayList<Playlist> playlists = gson.fromJson(jsonObject.get("listOfPlaylists"), playlistType);
 
-        Type playlistType = new TypeToken<ArrayList<Playlist>>() {
-        }.getType();
-        ArrayList<Playlist> playlists = gson.fromJson(jsonObject.get("listOfPlaylists"), playlistType);
-
-        users.add(new User(name, password, playlists));
+          users.add(new User(name, password, playlists));
+        }
       }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     return users;
   }

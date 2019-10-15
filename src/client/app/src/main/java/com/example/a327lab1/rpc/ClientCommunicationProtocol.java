@@ -16,8 +16,8 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
 public class ClientCommunicationProtocol {
-    private static final int PORT = 5000;
-    private static final int TIMEOUT_DURATION = 5000; // 5 seconds
+    private static final int PORT = 9999;
+    private static final int TIMEOUT_DURATION = 3000; // 2 seconds
 
     private DatagramSocket clientSocket;
     private InetAddress ipAddress;
@@ -39,11 +39,83 @@ public class ClientCommunicationProtocol {
     public void send(JsonObject request) {
         try {
             String message = request.toString();
-            String callSemantic = ((request).get("call semantics").getAsString());
 
             DatagramPacket outPacket = new DatagramPacket(message.getBytes(), message.length(), ipAddress, PORT);
 
-            if (callSemantic.equals("at-least-one")) {
+            clientSocket.send(outPacket);
+            ret = receive();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public JsonObject receive() throws SocketTimeoutException {
+        JsonObject response = null;
+        try {
+            byte[] buffer = new byte[65000];
+            DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
+            clientSocket.receive(inPacket);
+            response = new Gson().fromJson(new String(inPacket.getData(), 0, inPacket.getLength()), JsonObject.class);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
+
+    }
+
+    public JsonObject getRet() {
+        return ret;
+    }
+
+    public static InetAddress getLocalHost() {
+        AsyncTask<String, Void, InetAddress> task = new AsyncTask<String, Void, InetAddress>() {
+            @Override
+            protected InetAddress doInBackground(String... params) {
+                try {
+                    // Must use this ipAddress for android studio. Otherwise, use "localhost"
+                    return InetAddress.getByName("10.0.2.2");
+                } catch (UnknownHostException e) {
+                    return null;
+                }
+            }
+        };
+        try {
+            return task.execute().get();
+        } catch (InterruptedException e) {
+            return null;
+        } catch (ExecutionException e) {
+            return null;
+        }
+    }
+
+//    public static class SendRunnable implements Runnable {
+//        private DatagramSocket clientSocket;
+//        private DatagramPacket outPacket;
+//        private InetAddress ipAddress;
+//        private JsonObject ret;
+//
+//        private String message;
+//        private String callSemantic;
+//
+//
+//        public SendRunnable(String message, String callSemantic) {
+//            this.message = message;
+//            this.callSemantic = callSemantic;
+//        }
+//
+//        public void run() {
+//
+//        }
+//    }
+
+
+    /*
+            String callSemantic = ((request).get("call semantics").getAsString());
+
+    if (callSemantic.equals("at-least-one")) {
                 String reply = "invalid";
                 while (reply.equals("invalid")) {
                     //JSONObject response;
@@ -81,69 +153,7 @@ public class ClientCommunicationProtocol {
                 clientSocket.send(outPacket);
                 ret = receive();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    public JsonObject receive() throws SocketTimeoutException {
-        JsonObject response = null;
-        try {
-            byte[] buffer = new byte[65000];
-            DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
-            clientSocket.receive(inPacket);
-            response = new Gson().fromJson(new String(inPacket.getData(), 0, inPacket.getLength()), JsonObject.class);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return response;
-
-    }
-
-    public JsonObject getRet() {
-        return ret;
-    }
-
-    public static InetAddress getLocalHost() {
-        AsyncTask<String, Void, InetAddress> task = new AsyncTask<String, Void, InetAddress>() {
-            @Override
-            protected InetAddress doInBackground(String... params) {
-                try {
-                    return InetAddress.getByName("localhost");
-                } catch (UnknownHostException e) {
-                    return null;
-                }
-            }
-        };
-        try {
-            return task.execute().get();
-        } catch (InterruptedException e) {
-            return null;
-        } catch (ExecutionException e) {
-            return null;
-        }
-    }
-
-//    public static class SendRunnable implements Runnable {
-//        private DatagramSocket clientSocket;
-//        private DatagramPacket outPacket;
-//        private InetAddress ipAddress;
-//        private JsonObject ret;
-//
-//        private String message;
-//        private String callSemantic;
-//
-//
-//        public SendRunnable(String message, String callSemantic) {
-//            this.message = message;
-//            this.callSemantic = callSemantic;
-//        }
-//
-//        public void run() {
-//
-//        }
-//    }
+     */
 
 }

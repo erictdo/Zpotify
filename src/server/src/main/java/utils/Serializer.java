@@ -3,19 +3,24 @@ package main.java.utils;
 import com.google.gson.*;
 import main.java.model.User;
 
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
+import java.net.URL;
 import java.util.List;
 
 public class Serializer {
+    //public static final URL USER_FILE_PATH = Serializer.class.getResource("/user.json");
+
     public static void updateUserJson(List<User> users) {
-        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
-        String json = gson.toJson(users);
+
         try {
-            FileOutputStream fileOut = new FileOutputStream("/user.json");
-            OutputStreamWriter outputWriter = new OutputStreamWriter(fileOut);
-            outputWriter.write(json);
+            //PrintWriter outputWriter = new PrintWriter(new FileWriter(USER_FILE_PATH.getFile()));
+            PrintWriter outputWriter = new PrintWriter(new FileWriter(new File("user.json")));
+
+            Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().setPrettyPrinting().create();
+            gson.toJson(users, outputWriter);
+
             outputWriter.close();
+
         } catch (Exception e) {
             System.out.println(e);
         }

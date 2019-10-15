@@ -55,25 +55,22 @@ public class UserService extends Dispatcher {
      * @return
      */
     public String register(String name, String password, String passwordConfirm) {
-        System.out.println("Checking if User exists...");
+        System.out.println("Registering a new account...");
+        JsonObject responseJO = new JsonObject();
 
         boolean userExists = checkHasUser(name);
-        if (userExists) {
-            System.out.println("User does not exist. Creating account: " + name);
-
+        if (!userExists) {
             User newUser = new User(name, password, new ArrayList<Playlist>());
             userList.add(newUser);
             updateUserDatabase();
 
-            JsonObject isRegisteredJO = new JsonObject();
-            isRegisteredJO.addProperty("IsRegistered", true);
-
-            System.out.println("User successfully created: " + name);
-            return isRegisteredJO.toString();
-
+            System.out.println("User successfully registered: " + name);
+            responseJO.addProperty("isRegistered", true);
+            return responseJO.toString();
         } else {
-            System.out.println("User already exists. Returning empty Object");
-            return (new JsonObject()).toString();
+            System.out.println("Error: User is already registered.");
+            responseJO.addProperty("isRegistered", false);
+            return responseJO.toString();
         }
     }
 

@@ -39,8 +39,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         initUIViews();
 
@@ -63,11 +63,16 @@ public class RegisterActivity extends AppCompatActivity {
                 };
                 ret = proxy.synchExecution("register", params);
 
+                //Below is bad coding, but it works.
+                String responseJO = ret.get("ret").getAsString();
+
                 if (ret == null){
                     Toast.makeText(RegisterActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
-                } else if (!ret.toString().equals("{}")) {
+                } else if (responseJO.contains("true")) {
                     Toast.makeText(RegisterActivity.this, "Your account has been made. Please login.", Toast.LENGTH_SHORT).show();
                     finish();
+                } else if (responseJO.contains("false")) {
+                    Toast.makeText(RegisterActivity.this, "This account has already been registered. Try again.", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Invalid inputs. Try again.", Toast.LENGTH_SHORT).show();
                 }

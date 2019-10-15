@@ -30,7 +30,7 @@ public class Dispatcher implements DispatcherInterface {
 
         try {
             // Obtains the object pointing to SongServices
-            Object object = ListOfObjects.get(jsonRequest.get("objectName").getAsString());
+            Object object = ListOfObjects.get(jsonRequest.get("object").getAsString());
             Method[] methods = object.getClass().getMethods();
             Method method = null;
             // Obtains the method
@@ -60,7 +60,7 @@ public class Dispatcher implements DispatcherInterface {
                 case "java.lang.Integer":
                     parameter[i] = Integer.parseInt(strParam[i]);
                     break;
-                case "String":
+                case "java.lang.String":
                     parameter[i] = new String(strParam[i]);
                     break;
                 }

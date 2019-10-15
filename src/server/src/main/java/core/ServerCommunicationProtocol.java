@@ -110,11 +110,9 @@ public class ServerCommunicationProtocol extends Thread {
 
                 // Get the values of the "Method" Object
                 String methodName = inJsonMessage.get("remoteMethod").getAsString();
-                String serviceName = inJsonMessage.get("service").getAsString();
-                String callSemanticsName = inJsonMessage.get("call-semantics").getAsString();
 
                 // Call dispatcher to return an outMessage
-                String outMessage = dispatcher.dispatch(methodName);
+                String outMessage = dispatcher.dispatch(inJsonMessage.toString());
                 byte[] outMessageBytes = outMessage.getBytes();
 
                 // Send response to client
