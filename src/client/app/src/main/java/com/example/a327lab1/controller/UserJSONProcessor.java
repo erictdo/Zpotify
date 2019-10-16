@@ -1,3 +1,8 @@
+/**
+ * This is used for getting data from JSON files before we implemented the server.
+ * After implementing the server, this is no longer used.
+ */
+
 package com.example.a327lab1.controller;
 
 import android.content.Context;

@@ -16,7 +16,12 @@ import android.view.ViewGroup;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -87,9 +92,10 @@ public class PlaylistFragment extends Fragment {
      * View attributes of the music list.
      */
     private void initAttributes() {
-        userJSONProcessor = new UserJSONProcessor(getContext());
+        //userJSONProcessor = new UserJSONProcessor(getContext());
         userName = getActivity().getIntent().getExtras().getString("name");
-        listOfPlaylists = userJSONProcessor.getListOfPlaylistsFromUser(userName);
+        //listOfPlaylists = userJSONProcessor.getListOfPlaylistsFromUser(userName);
+        listOfPlaylists = getListOfPlaylists(userName);
         playlistNames = getPlaylistNames(listOfPlaylists);
     }
 
@@ -127,8 +133,24 @@ public class PlaylistFragment extends Fragment {
         return nameList;
     }
 
+    private ArrayList<Playlist> getListOfPlaylists(String userName) {
+        JsonObject ret = new JsonObject();
+        Proxy proxy = new Proxy(getContext());
+        String[] params = {
+                userName
+        };
+        ret = proxy.synchExecution("getListOfPlaylist", params);
+
+        String responseJO = ret.get("ret").getAsString();
+
+        Type playlistType = new TypeToken<ArrayList<Playlist>>() {}.getType();
+        ArrayList<Playlist> retPlaylist = new Gson().fromJson(responseJO, playlistType);
+
+        return retPlaylist;
+    }
+
     /**
-     * Activity result method to find the result of the palylist.
+     * Activity result method to reset the fragment after getting result from playlist popup.
      * @param requestCode code request
      * @param resultCode code result
      * @param data intent data

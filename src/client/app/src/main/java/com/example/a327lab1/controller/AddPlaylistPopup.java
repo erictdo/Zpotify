@@ -1,7 +1,9 @@
 package com.example.a327lab1.controller;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -10,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.a327lab1.R;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonObject;
 
 /**
  * Class that displays a pop up of the playlist.
@@ -30,9 +34,13 @@ public class AddPlaylistPopup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_playlist_popup);
 
+        //Bad coding
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         initUIViews();
 
-        userJSONProcessor = new UserJSONProcessor(this);
+        //userJSONProcessor = new UserJSONProcessor(this);
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -58,9 +66,31 @@ public class AddPlaylistPopup extends AppCompatActivity {
                 String playlistName = newPlaylistName.getText().toString();
                 if (!playlistName.isEmpty()) {
                     String userName = getIntent().getExtras().getString("name");
-                    userJSONProcessor.addPlaylistToUser(userName, playlistName);
-                    setResult(Activity.RESULT_OK);
+
+                    JsonObject ret = new JsonObject();
+                    Proxy proxy = new Proxy(AddPlaylistPopup.this);
+                    String[] params = {
+                            userName,
+                            playlistName
+                    };
+                    ret = proxy.synchExecution("addPlaylist", params);
+
+                    String responseJO = ret.get("ret").getAsString();
+
+                    if (ret == null) {
+                        Toast.makeText(AddPlaylistPopup.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
+                    } else if (responseJO.contains("true")) {
+                        Toast.makeText(AddPlaylistPopup.this, "Playlist, " + playlistName + " has been added.", Toast.LENGTH_SHORT).show();
+                        setResult(Activity.RESULT_OK);
+                    } else if (responseJO.contains("false")) {
+                        Toast.makeText(AddPlaylistPopup.this, "Error: There's already a playlist with that name!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(AddPlaylistPopup.this, "Something went wrong. Server returned something weird.", Toast.LENGTH_SHORT).show();
+                    }
+
+                    //userJSONProcessor.addPlaylistToUser(userName, playlistName);
                     finish();
+
                 } else {
                     Toast.makeText(AddPlaylistPopup.this, "Please enter playlist name", Toast.LENGTH_SHORT).show();
                 }

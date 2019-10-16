@@ -2,6 +2,7 @@ package com.example.a327lab1.controller;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -34,6 +35,10 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //Bad coding
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         initUIViews();
 
         userJSONProcessor = new UserJSONProcessor(this);
@@ -57,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
                 //Below is bad coding, but it works.
                 String responseJO = ret.get("ret").getAsString();
 
-
                 if (ret == null) {
                     Toast.makeText(LoginActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
                 } else if (responseJO.contains("true")) {
@@ -71,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 } else if (responseJO.contains("false")) {
                     Toast.makeText(LoginActivity.this, "Invalid Credentials. Try again.", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(LoginActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Something went wrong. Server returned something weird.", Toast.LENGTH_SHORT).show();
                 }
 
 //                if (validateLoginCredentials(name, password)){

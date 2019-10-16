@@ -39,12 +39,13 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        //Bad coding
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         initUIViews();
 
-        userJSONProcessor = new UserJSONProcessor(this);
+        //userJSONProcessor = new UserJSONProcessor(this);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override

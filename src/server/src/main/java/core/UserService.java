@@ -1,7 +1,5 @@
 package main.java.core;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import main.java.model.Playlist;
 import main.java.model.User;
@@ -10,7 +8,6 @@ import main.java.utils.Serializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class represents a dispatcher for Login information
@@ -33,17 +30,17 @@ public class UserService extends Dispatcher {
      */
     public String login(String username, String password) throws IOException {
         System.out.println("Logging in: Checking if User exists...");
+        JsonObject responseJO = new JsonObject();
 
-        User validUser = checkValidUser(username, password);
-        if (validUser != null) {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            String userJsonString = gson.toJson(validUser);
-            JsonObject userJO = new JsonObject();
-            userJO.add("user", userJO);
-            return userJO.toString();
+        boolean validUser = checkValidUser(username, password);
+        if (validUser) {
+            System.out.println("Validated Credentials. Returning True.");
+            responseJO.addProperty("isLogin", true);
+            return responseJO.toString();
         } else {
-            System.out.println("User credentials were not found in the database. Returning Empty Json Object");
-            return (new JsonObject()).toString();
+            System.out.println("User is not registered. Returning False.");
+            responseJO.addProperty("isLogin", false);
+            return responseJO.toString();
         }
     }
 
@@ -74,6 +71,11 @@ public class UserService extends Dispatcher {
         }
     }
 
+    //TODO
+    public String getListOfPlaylists(String userName) {
+
+    }
+
     /**
      * Adds a new playlist to the user's account
      * @param userName      User's name
@@ -82,15 +84,26 @@ public class UserService extends Dispatcher {
      */
     public String addPlaylist(String userName, String playlistName) {
         System.out.println("Adding Playlist" + playlistName + " to " + userName + "'s profile");
+        JsonObject responseJO = new JsonObject();
+
         for (int i = 0 ; i < userList.size() ; i++) {
             if (userList.get(i).getName().equals(userName)) {
-                userList.get(i).addPlaylist(playlistName);
-                JsonObject playlistJO = new JsonObject();
-                playlistJO.add("playlist", playlistJO);
-                return playlistJO.toString();
+                Playlist userPlaylist = userList.get(i).getListOfPlaylists().stream()
+                        .filter(p -> p.getPlaylistName() == playlistName)
+                        .findFirst()
+                        .orElse(null);
+                if (userPlaylist != null) {
+                    userList.get(i).addPlaylist(playlistName);
+                    responseJO.addProperty("addedPlaylist", true);
+                    return responseJO.toString();
+                } else {
+                    responseJO.addProperty("addedPlaylist", false);
+                    return responseJO.toString();
+                }
             }
         }
-        return (new JsonObject()).toString();
+        responseJO.addProperty("userNotFound", false);
+        return responseJO.toString();
     }
 
     /** ~ Helper methods are below ~ */
@@ -108,13 +121,13 @@ public class UserService extends Dispatcher {
      * @param name  Username being searched
      * @return      User if user exists; Null otherwise
      */
-    private User checkValidUser(String name, String password) {
+    private boolean checkValidUser(String name, String password) {
         for (int i = 0; i < userList.size(); i++) {
             if (userList.get(i).getName().equals(name) && userList.get(i).getPassword().equals(password)) {
-                return userList.get(i);
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     /**
