@@ -11,6 +11,8 @@ import android.widget.Toast;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.User;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonObject;
 
 /**
  * Login Class Activity.
@@ -44,15 +46,43 @@ public class LoginActivity extends AppCompatActivity {
                 String name = userName.getText().toString();
                 String password = userPassword.getText().toString();
 
-                if (validateLoginCredentials(name, password)){
-                    User user = userJSONProcessor.getUser(name);
+                JsonObject ret;
+                Proxy proxy = new Proxy(LoginActivity.this);
+                String[] params = {
+                        name,
+                        password
+                };
+                ret = proxy.synchExecution("login", params);
+
+                //Below is bad coding, but it works.
+                String responseJO = ret.get("ret").getAsString();
+
+
+                if (ret == null) {
+                    Toast.makeText(LoginActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
+                } else if (responseJO.contains("true")) {
+                    Toast.makeText(LoginActivity.this, "Logging in.", Toast.LENGTH_SHORT).show();
 
                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     i.putExtra("name", name);
                     startActivity(i);
 
                     finish();
+                } else if (responseJO.contains("false")) {
+                    Toast.makeText(LoginActivity.this, "Invalid Credentials. Try again.", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Something went wrong. Could not send request to server.", Toast.LENGTH_SHORT).show();
                 }
+
+//                if (validateLoginCredentials(name, password)){
+//                    User user = userJSONProcessor.getUser(name);
+//
+//                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
+//                    i.putExtra("name", name);
+//                    startActivity(i);
+//
+//                    finish();
+//                }
             }
         });
 
