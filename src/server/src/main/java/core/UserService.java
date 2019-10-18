@@ -1,12 +1,15 @@
 package main.java.core;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import main.java.model.Playlist;
 import main.java.model.User;
 import main.java.utils.Deserializer;
 import main.java.utils.Serializer;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -73,7 +76,18 @@ public class UserService extends Dispatcher {
 
     //TODO
     public String getListOfPlaylists(String userName) {
+        System.out.println("Getting list of user's playlists");
+        JsonObject responseJO = new JsonObject();
+        Gson gson = new Gson();
 
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                String playlistJO = gson.toJson(userList.get(i).getListOfPlaylists());
+                return playlistJO;
+            }
+        }
+        responseJO.addProperty("userNotFound", false);
+        return responseJO.toString();
     }
 
     /**
@@ -88,18 +102,9 @@ public class UserService extends Dispatcher {
 
         for (int i = 0 ; i < userList.size() ; i++) {
             if (userList.get(i).getName().equals(userName)) {
-                Playlist userPlaylist = userList.get(i).getListOfPlaylists().stream()
-                        .filter(p -> p.getPlaylistName() == playlistName)
-                        .findFirst()
-                        .orElse(null);
-                if (userPlaylist != null) {
-                    userList.get(i).addPlaylist(playlistName);
-                    responseJO.addProperty("addedPlaylist", true);
-                    return responseJO.toString();
-                } else {
-                    responseJO.addProperty("addedPlaylist", false);
-                    return responseJO.toString();
-                }
+                userList.get(i).addPlaylist(playlistName);
+                responseJO.addProperty("addedPlaylist", true);
+                return responseJO.toString();
             }
         }
         responseJO.addProperty("userNotFound", false);

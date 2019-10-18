@@ -46,9 +46,10 @@ public class ServerCommunicationProtocol extends Thread {
      * Listening for a request from client
      */
     private void listen() {
-        System.out.println("Server listening...");
         try {
             while (true) {
+                System.out.println("Server listening...");
+
                 //Receiving Request Packet
                 buffer = new byte[256];
                 inPacket = new DatagramPacket(buffer, buffer.length);

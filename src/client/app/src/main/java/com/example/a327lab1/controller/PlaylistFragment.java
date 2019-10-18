@@ -139,7 +139,7 @@ public class PlaylistFragment extends Fragment {
         String[] params = {
                 userName
         };
-        ret = proxy.synchExecution("getListOfPlaylist", params);
+        ret = proxy.synchExecution("getListOfPlaylists", params);
 
         String responseJO = ret.get("ret").getAsString();
 
