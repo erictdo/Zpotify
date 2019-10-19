@@ -12,8 +12,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 public class Deserializer {
-  public InputStream MUSIC_FILE;
-  public InputStream USER_FILE;
+  private InputStream MUSIC_FILE;
+  private InputStream USER_FILE;
 
   /**
    * Constructor for the deserializer
@@ -21,6 +21,7 @@ public class Deserializer {
   public Deserializer () {
     USER_FILE = Deserializer.class.getResourceAsStream("/user.json");
     MUSIC_FILE = Deserializer.class.getResourceAsStream("/music.json");
+
   }
 
   /**

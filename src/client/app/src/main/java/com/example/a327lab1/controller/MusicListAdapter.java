@@ -40,6 +40,7 @@ class AudioMediaSource extends MediaDataSource{
 
     public AudioMediaSource(InputStream fileName){
 
+
         inputStream = fileName;
     }
 
@@ -118,8 +119,12 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     AssetManager am = context.getAssets();
                     AssetFileDescriptor afd = am.openFd("imperial.mp3");
 
+                    InputStream is = new CECS327InputStream("imperial.mp3");
                     mp = new MediaPlayer();
-                    MediaDataSource mds = new AudioMediaSource(am.open("imperial.mp3"));
+
+//                    MediaDataSource mds = new AudioMediaSource(am.open("imperial.mp3"));
+
+                    MediaDataSource mds = new AudioMediaSource(is);
 
                     mp.setDataSource(mds);
                     mp.prepareAsync();

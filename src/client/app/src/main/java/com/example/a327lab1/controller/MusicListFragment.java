@@ -15,7 +15,13 @@ import android.widget.TextView;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
+import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -26,8 +32,6 @@ public class MusicListFragment extends Fragment {
     public static final String TAG = "MusicListFragment";
     public static final int pageSize = 20;
 
-    private MusicJSONProcessor musicJSONProcessor;
-
     private RecyclerView recyclerView;
 
     private TextView totalMusic;
@@ -37,10 +41,8 @@ public class MusicListFragment extends Fragment {
     private SearchView searchEntry;
 
     private ArrayList<Music> musicList;
-    private ArrayList<Music> searchList;
-    private ArrayList<Music> musicPageList;
-    private int pageIndex;
-    private int endPageIndex;
+    private int pageNum;
+    private String search;
     private String userName;
 
     /**
@@ -55,8 +57,6 @@ public class MusicListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_music_list, container, false);
 
-        musicJSONProcessor = new MusicJSONProcessor(getContext());
-
         initUIViews(view);
         initAttributes();
         initRecyclerView(view);
@@ -65,10 +65,9 @@ public class MusicListFragment extends Fragment {
         leftBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pageIndex > 0) {
-                    pageIndex -= pageSize;
-                    endPageIndex -= pageSize;
-                    musicPageList = new ArrayList<Music>(musicList.subList(pageIndex, endPageIndex));
+                if (pageNum > 1) {
+                    pageNum--;
+                    musicList = getMusicPageList();
                     updateRecyclerView(view);
                     updatePageNumberView();
                 }
@@ -78,15 +77,9 @@ public class MusicListFragment extends Fragment {
         rightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (pageIndex + pageSize < searchList.size()) {
-                    pageIndex += pageSize;
-                    endPageIndex += pageSize;
-                    if (pageIndex + pageSize > searchList.size()) {
-                        endPageIndex = searchList.size();
-                    } else {
-                        endPageIndex = pageIndex + pageSize;
-                    }
-                    musicPageList = new ArrayList<Music>(searchList.subList(pageIndex, endPageIndex));
+                if (!musicList.isEmpty()) {
+                    pageNum++;
+                    musicList = getMusicPageList();
                     updateRecyclerView(view);
                     updatePageNumberView();
                 }
@@ -94,25 +87,15 @@ public class MusicListFragment extends Fragment {
         });
 
         searchEntry.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            /**
-             * Search method.
-             * @param s string
-             * @return page view
-             */
             @Override
             public boolean onQueryTextSubmit(String s) {
-                searchList = getSearchMusicList(s);
-                pageIndex = 0;
-                if (pageIndex + pageSize > searchList.size()) {
-                    endPageIndex = searchList.size();
-                } else {
-                    endPageIndex = pageIndex + pageSize;
-                }
-                musicPageList = new ArrayList<Music>(searchList.subList(pageIndex, endPageIndex));
-                totalMusic.setText(String.valueOf(searchList.size()));
+
+                search = s;
+                pageNum = 1;
+                musicList = getMusicPageList();
                 updateRecyclerView(view);
                 updatePageNumberView();
-
+                searchEntry.clearFocus();
                 return false;
             }
 
@@ -130,12 +113,11 @@ public class MusicListFragment extends Fragment {
      */
     private void initAttributes() {
         userName = getActivity().getIntent().getExtras().getString("name");
-        musicList = musicJSONProcessor.getListOfMusic();
-        searchList = musicList;
-        musicPageList = new ArrayList<Music>(searchList.subList(pageIndex, pageIndex + 19));
-        pageIndex = 0;
-        endPageIndex = pageIndex + pageSize;
-        totalMusic.setText(String.valueOf(searchList.size()));
+        //musicList = musicJSONProcessor.getListOfMusic();
+        search = "";
+        pageNum = 1;
+        musicList = getMusicPageList();
+        //totalMusic.setText(String.valueOf(musicList.size()));
     }
 
     /**
@@ -165,7 +147,7 @@ public class MusicListFragment extends Fragment {
      * @param view view of the music list
      */
     private void updateRecyclerView(View view) {
-        MusicListAdapter adapter = new MusicListAdapter(getContext(), musicPageList, userName);
+        MusicListAdapter adapter = new MusicListAdapter(getContext(), musicList, userName);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager((new LinearLayoutManager(getContext())));
     }
@@ -174,9 +156,11 @@ public class MusicListFragment extends Fragment {
      * Method to update the page number
      */
     private void updatePageNumberView() {
-        int startPageNumber = pageIndex + 1;
-        String pageNumberString = startPageNumber + " - " + endPageIndex;
+        int startPageNumber = ((pageNum - 1) * pageSize) + 1;
+        int endPageNumber = ((pageNum - 1) * pageSize) + pageSize;
+        String pageNumberString = startPageNumber + " - " + endPageNumber;
         pageNumber.setText(pageNumberString);
+        //totalMusic.setText(getNumOfSongs());
     }
 
     /**
@@ -194,6 +178,24 @@ public class MusicListFragment extends Fragment {
             }
         }
         return searchArray;
+    }
+
+    private ArrayList<Music> getMusicPageList() {
+        JsonObject ret = new JsonObject();
+        Proxy proxy = new Proxy(getContext());
+        String[] params = {
+                search,
+                String.valueOf(pageNum),
+                String.valueOf(pageSize)
+        };
+        ret = proxy.synchExecution("getMusicPageList", params);
+
+        String responseJO = ret.get("ret").getAsString();
+
+        Type musicListType = new TypeToken<ArrayList<Music>>() {}.getType();
+        ArrayList<Music> retMusicList = new Gson().fromJson(responseJO, musicListType);
+
+        return retMusicList;
     }
 
 }

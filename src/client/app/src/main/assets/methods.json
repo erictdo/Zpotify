@@ -3,23 +3,12 @@
     {
       "remoteMethod": "login",
       "object": "UserService",
-      "call semantics": "maybe",
-      "param":
-      {
-        "username": "",
-        "password": ""
-      }
+      "call semantics": "maybe"
     },
     {
       "remoteMethod": "register",
       "object": "UserService",
-      "call semantics": "maybe",
-      "param":
-      {
-        "username": "",
-        "password": "",
-        "passwordConfirm": ""
-      }
+      "call semantics": "maybe"
     },
     {
       "remoteMethod": "getUser",
@@ -27,60 +16,34 @@
       "call semantics": "at-least-one"
     },
     {
-      "remoteMethod": "getMusic",
+      "remoteMethod": "getMusicPageList",
       "object": "MusicService",
       "call semantics": "at-least-one"
     },
     {
       "remoteMethod": "getListOfPlaylists",
       "object": "UserService",
-      "call semantics": "at-least-one",
-      "param":
-      {
-        "userName": ""
-      }
+      "call semantics": "at-least-one"
     },
     {
       "remoteMethod": "addPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one",
-      "param":
-      {
-        "userName": "",
-        "playlistName": ""
-      }
+      "call semantics": "at-most-one"
     },
     {
       "remoteMethod": "deletePlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one",
-      "param":
-      {
-        "userName": "",
-        "playlistName": ""
-      }
+      "call semantics": "at-most-one"
     },
     {
       "remoteMethod": "addSongToPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one",
-      "param":
-      {
-        "songName": "",
-        "userName": "",
-        "playlistName": ""
-      }
+      "call semantics": "at-most-one"
     },
     {
       "remoteMethod": "deleteSongFromPlaylist",
       "object": "UserService",
-      "call semantics": "at-most-one",
-      "param":
-      {
-        "songName": "",
-        "userName": "",
-        "playlistName": ""
-      }
+      "call semantics": "at-most-one"
     },
     {
       "remoteMethod": "MP3Handler",
