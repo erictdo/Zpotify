@@ -9,8 +9,13 @@
 
 package com.example.a327lab1.rpc;
 
+import android.content.Context;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +25,7 @@ public class CECS327InputStream extends InputStream {
     * Total number of bytes in the file
     */
     protected int total = 0;
+    protected Context context;
     /**
     * Marker
     */
@@ -53,15 +59,18 @@ public class CECS327InputStream extends InputStream {
      * frament in nextBuf
      * @param fileName The name of the file
     */
-    public CECS327InputStream(String fileName) throws IOException {
+    public CECS327InputStream(String fileName, Context context) throws IOException {
+        //pass inputstream into constructor
         this.fileName = fileName;
+        this.context = context;
+        //Can't find file, can't get total length
         File file = new File(fileName);
-        this.total =  (int)file.length();
+        this.total = (int)file.length();
         this.buf  = new byte[FRAGMENT_SIZE];	
         this.nextBuf  = new byte[FRAGMENT_SIZE];	
         getBuff(fragment);
         fragment++;
-     }
+    }
 
     /**
      * getNextBuff reads the buffer. The fuction is used to 
@@ -69,8 +78,12 @@ public class CECS327InputStream extends InputStream {
     */
     protected void getBuff(int fragment) throws IOException
     {
-        File file = new File(fileName);
-        FileInputStream inputStream = new FileInputStream(file);
+        FileDescriptor fd = new FileDescriptor();
+        AssetManager am = context.getAssets();
+        //AssetFileDescriptor afd = am.openFd("imperial.mp3");
+        //File file = new File(fileName);
+        //FileInputStream inputStream = new FileInputStream(file);
+        InputStream inputStream = am.open(fileName);
         inputStream.skip(fragment * FRAGMENT_SIZE);
         inputStream.read(nextBuf);
         inputStream.close(); 
