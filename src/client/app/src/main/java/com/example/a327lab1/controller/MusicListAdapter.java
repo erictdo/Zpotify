@@ -16,15 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
 import com.example.a327lab1.rpc.CECS327InputStream;
 
-import java.io.File;
 import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -36,10 +33,11 @@ class AudioMediaSource extends MediaDataSource{
 
     private InputStream inputStream;
     private String fileName;
+
+
     //private CECS327InputStream is;
 
     public AudioMediaSource(InputStream fileName){
-
         inputStream = fileName;
     }
 
@@ -62,6 +60,7 @@ class AudioMediaSource extends MediaDataSource{
 public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder> {
     private static final String TAG = "MusicListAdapter";
     private MediaPlayer mp;
+    private MediaDataSource mds;
     private ArrayList<Music> listOfMusic;
     private String userName;
     private Context context;
@@ -116,10 +115,11 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                 try {
                     FileDescriptor fd = new FileDescriptor();
                     AssetManager am = context.getAssets();
-                    AssetFileDescriptor afd = am.openFd("imperial.mp3");
+//                    AssetFileDescriptor afd = am.openFd("imperial.mp3");
 
+                    InputStream is = am.open("imperial.mp3");
+                    mds = new AudioMediaSource(is);
                     mp = new MediaPlayer();
-                    MediaDataSource mds = new AudioMediaSource(am.open("imperial.mp3"));
 
                     mp.setDataSource(mds);
                     mp.prepareAsync();
@@ -127,6 +127,23 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
+                /*if(!mp.isPlaying())
+                {
+                    mp.setDataSource(mds);
+                    mp.prepareAsync();
+                    mp.start();
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        public void onCompletion(MediaPlayer mp) {
+                            songStop(); // finish current activity
+                        }
+                    });
+                }
+                else if(mp.isPlaying())
+                {
+                    songStop();
+                }
+                 */
 
                 /*if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
@@ -160,7 +177,12 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
     public int getItemCount() {
         return listOfMusic.size();
     }
-
+    private void songStop()
+    {
+        mp.stop();
+        mp.release();
+        mp = new MediaPlayer();
+    }
     /**
      * View Holder for the Music List Adapter that extends from the Recycle View.
      */
