@@ -77,7 +77,7 @@ public class MusicListFragment extends Fragment {
         rightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!musicList.isEmpty()) {
+                if (musicList.size() < pageNum) {
                     pageNum++;
                     musicList = getMusicPageList();
                     updateRecyclerView(view);

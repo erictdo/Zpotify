@@ -26,6 +26,11 @@
       "call semantics": "at-least-one"
     },
     {
+      "remoteMethod": "getUserPlaylist",
+      "object": "UserService",
+      "call-semantics": "at-least-one"
+    },
+    {
       "remoteMethod": "addPlaylist",
       "object": "UserService",
       "call semantics": "at-most-one"
@@ -36,7 +41,7 @@
       "call semantics": "at-most-one"
     },
     {
-      "remoteMethod": "addSongToPlaylist",
+      "remoteMethod": "addMusicToPlaylist",
       "object": "UserService",
       "call semantics": "at-most-one"
     },

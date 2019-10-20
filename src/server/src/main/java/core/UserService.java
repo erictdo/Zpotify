@@ -3,6 +3,7 @@ package main.java.core;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
+import main.java.model.Music;
 import main.java.model.Playlist;
 import main.java.model.User;
 import main.java.utils.Deserializer;
@@ -19,10 +20,12 @@ public class UserService extends Dispatcher {
     private static final int FRAGMENT_SIZE = 8192;
     private Deserializer deserializer;
     private ArrayList<User> userList;
+    private ArrayList<Music> musicList;
 
     public UserService() {
         deserializer = new Deserializer();
         userList = deserializer.deserializeUsersFromJson();
+        musicList = deserializer.deserializeSongsFromJson();
     }
 
     /**
@@ -74,7 +77,6 @@ public class UserService extends Dispatcher {
         }
     }
 
-    //TODO
     public String getListOfPlaylists(String userName) {
         System.out.println("Getting list of user's playlists");
         JsonObject responseJO = new JsonObject();
@@ -103,11 +105,58 @@ public class UserService extends Dispatcher {
         for (int i = 0 ; i < userList.size() ; i++) {
             if (userList.get(i).getName().equals(userName)) {
                 userList.get(i).addPlaylist(playlistName);
+                updateUserDatabase();
+
                 responseJO.addProperty("addedPlaylist", true);
                 return responseJO.toString();
             }
         }
         responseJO.addProperty("userNotFound", false);
+        return responseJO.toString();
+    }
+
+    public String addMusicToPlaylist(String userName, String playlistName, String musicID) {
+        System.out.println("Adding Music to " + userName + "'s playlist, " + playlistName);
+        JsonObject responseJO = new JsonObject();
+
+        Gson gson = new Gson();
+
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                for (int j = 0 ; j < userList.get(i).getListOfPlaylists().size() ; j++) {
+                    if (userList.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
+                        for (int k = 0 ; k < musicList.size() ; k++) {
+                            if (musicList.get(k).getRelease().getId().equals(musicID)) {
+                                userList.get(i).getListOfPlaylists().get(j).addMusicToPlaylist(musicList.get(k));
+                            }
+                        }
+                        updateUserDatabase();
+
+                        responseJO.addProperty("addedMusicToPlaylist", true);
+                        return responseJO.toString();
+                    }
+                }
+            }
+        }
+        responseJO.addProperty("addedMusicToPlaylist", false);
+        return responseJO.toString();
+    }
+
+    public String getUserPlaylist(String userName, String playlistName) {
+        Gson gson = new Gson();
+        JsonObject responseJO = new JsonObject();
+
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                for (int j = 0 ; j < userList.get(i).getListOfPlaylists().size() ; j++) {
+                    if (userList.get(i).getListOfPlaylists().get(j).getPlaylistName().equals(playlistName)) {
+                        String userPlaylistJO = gson.toJson(userList.get(i).getListOfPlaylists().get(j).getListOfMusic());
+                        return userPlaylistJO;
+                    }
+                }
+            }
+        }
+        responseJO.addProperty("getUserPlaylist", false);
         return responseJO.toString();
     }
 

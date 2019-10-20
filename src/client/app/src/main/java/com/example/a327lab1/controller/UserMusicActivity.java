@@ -9,7 +9,13 @@ import android.widget.TextView;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
+import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -19,7 +25,7 @@ public class UserMusicActivity extends AppCompatActivity {
 
     private static final String TAG = "UserMusicActivity";
 
-    private UserJSONProcessor userJSONProcessor;
+    //private UserJSONProcessor userJSONProcessor;
 
     private String userName;
     private String playlistName;
@@ -39,7 +45,7 @@ public class UserMusicActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_music);
 
-        userJSONProcessor = new UserJSONProcessor(this);
+        //userJSONProcessor = new UserJSONProcessor(this);
 
         initAttributes();
         initRecyclerView();
@@ -51,7 +57,8 @@ public class UserMusicActivity extends AppCompatActivity {
     private void initAttributes() {
         userName = getIntent().getExtras().getString("userName");
         playlistName = getIntent().getExtras().getString("playlistName");
-        userMusicList = userJSONProcessor.getListOfMusicFromPlaylist(userName, playlistName);
+        //userMusicList = userJSONProcessor.getListOfMusicFromPlaylist(userName, playlistName);
+        userMusicList = getUserPlaylist();
     }
 
     /**
@@ -64,5 +71,22 @@ public class UserMusicActivity extends AppCompatActivity {
         UserMusicAdapter adapter = new UserMusicAdapter(this, userMusicList, playlistName, userName);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager((new LinearLayoutManager(this)));
+    }
+
+    private ArrayList<Music> getUserPlaylist() {
+        JsonObject ret = new JsonObject();
+        Proxy proxy = new Proxy(this);
+        String[] params = {
+                userName,
+                playlistName
+        };
+        ret = proxy.synchExecution("getUserPlaylist", params);
+
+        String responseJO = ret.get("ret").getAsString();
+
+        Type musicListType = new TypeToken<ArrayList<Music>>() {}.getType();
+        ArrayList<Music> userMusicList = new Gson().fromJson(responseJO, musicListType);
+
+        return userMusicList;
     }
 }

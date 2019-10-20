@@ -9,7 +9,12 @@ import android.util.Log;
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
 import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -19,7 +24,7 @@ public class AddMusicToPlaylistActivity extends AppCompatActivity {
 
     private static final String TAG = "AddMusicToPlaylist";
 
-    private UserJSONProcessor userJSONProcessor;
+    //private UserJSONProcessor userJSONProcessor;
 
     private RecyclerView recyclerView;
 
@@ -37,7 +42,7 @@ public class AddMusicToPlaylistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_music_to_playlist);
 
-        userJSONProcessor = new UserJSONProcessor(this);
+        //userJSONProcessor = new UserJSONProcessor(this);
 
         initAttributes();
         initUIViews();
@@ -50,7 +55,7 @@ public class AddMusicToPlaylistActivity extends AppCompatActivity {
     private void initAttributes() {
         userName = getIntent().getExtras().getString("userName");
         music = (Music)getIntent().getSerializableExtra("music");
-        userListOfPlaylists = userJSONProcessor.getListOfPlaylistsFromUser(userName);
+        userListOfPlaylists = getListOfPlaylists(userName);
         playlistNames = getPlaylistNames(userListOfPlaylists);
     }
 
@@ -80,5 +85,21 @@ public class AddMusicToPlaylistActivity extends AppCompatActivity {
             nameList.add(playlist.getPlaylistName());
         }
         return nameList;
+    }
+
+    private ArrayList<Playlist> getListOfPlaylists(String userName) {
+        JsonObject ret = new JsonObject();
+        Proxy proxy = new Proxy(this);
+        String[] params = {
+                userName
+        };
+        ret = proxy.synchExecution("getListOfPlaylists", params);
+
+        String responseJO = ret.get("ret").getAsString();
+
+        Type playlistType = new TypeToken<ArrayList<Playlist>>() {}.getType();
+        ArrayList<Playlist> retPlaylist = new Gson().fromJson(responseJO, playlistType);
+
+        return retPlaylist;
     }
 }

@@ -14,7 +14,13 @@ import android.widget.Toast;
 
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
+import com.example.a327lab1.model.Playlist;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 /**
@@ -81,7 +87,8 @@ public class AddMusicToPlaylistAdapter extends RecyclerView.Adapter<AddMusicToPl
 
                 Toast.makeText(context,  music.getSong().getTitle() + " has been added to " + playlistName, Toast.LENGTH_SHORT).show();
 
-                userJSONProcessor.addMusicToPlaylist(userName, playlistName, music);
+                //userJSONProcessor.addMusicToPlaylist(userName, playlistName, music);
+                addMusicToPlaylist(userName, playlistName, music);
 
                 ((AddMusicToPlaylistActivity)context).finish();
             }
@@ -128,36 +135,24 @@ public class AddMusicToPlaylistAdapter extends RecyclerView.Adapter<AddMusicToPl
             //itemView.setOnCreateContextMenuListener(this);
         }
 
-//        @Override
-//        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//            menu.setHeaderTitle("Select The Action");
-//            MenuItem rename = menu.add(1, 1, 1, "Rename");//groupId, itemId, order, title
-//            MenuItem delete = menu.add(1, 2, 2, "Delete");
-//
-//            rename.setOnMenuItemClickListener(onEditMenu);
-//            delete.setOnMenuItemClickListener(onEditMenu);
-//        }
-//
-//        private final MenuItem.OnMenuItemClickListener onEditMenu = new MenuItem.OnMenuItemClickListener() {
-//            @Override
-//            public boolean onMenuItemClick(MenuItem item) {
-//
-//                switch (item.getItemId()) {
-//                    case 1:
-//                        //Implement Rename feature
-//                        Toast.makeText(context, "Implement Rename function", Toast.LENGTH_SHORT).show();
-//                        break;
-//
-//                    case 2:
-//                        int playlistIndex = getAdapterPosition();
-//                        String playlistName = playlistNames.get(playlistIndex);
-//                        UserJSONProcessor userJSONProcessor = new UserJSONProcessor(context);
-//                        userJSONProcessor.deletePlaylistFromUser(userName,playlistName);
-//                        removeAt(playlistIndex);
-//                        break;
-//                }
-//                return true;
-//            }
-//        };
+    }
+
+    public String addMusicToPlaylist(String userName, String playlistName, Music music) {
+        Gson gson = new Gson();
+
+
+        JsonObject ret = new JsonObject();
+
+        Proxy proxy = new Proxy(context);
+        String[] params = {
+                userName,
+                playlistName,
+                music.getRelease().getId()
+        };
+        ret = proxy.synchExecution("addMusicToPlaylist", params);
+
+        String responseJO = ret.get("ret").getAsString();
+
+        return responseJO;
     }
 }

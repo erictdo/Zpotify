@@ -28,6 +28,7 @@ public class MusicService extends Dispatcher {
      * Gets all the songs from the song database
      */
     public String getMusicPageList(String search, String pageNumString, String pageSizeString) {
+        System.out.println("Getting music page list...");
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
         int pageNum = Integer.parseInt(pageNumString);

@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ClientCommunicationProtocol {
     private static final int PORT = 9999;
-    private static final int TIMEOUT_DURATION = 3000; // 2 seconds
+    private static final int TIMEOUT_DURATION = 10000; // 10 seconds
 
     private DatagramSocket clientSocket;
     private InetAddress ipAddress;
