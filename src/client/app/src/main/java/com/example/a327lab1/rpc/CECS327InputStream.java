@@ -52,7 +52,7 @@ public class CECS327InputStream extends InputStream {
      /**
      * File name to stream
      */
-    protected String fileName;
+    protected String filePath;
 
     /**
      * Constructor of the class. Initialize the variables and reads the first 
@@ -61,10 +61,10 @@ public class CECS327InputStream extends InputStream {
     */
     public CECS327InputStream(String fileName, Context context) throws IOException {
         //pass inputstream into constructor
-        this.fileName = fileName;
+        this.filePath = "/data/data/com.example.a327lab1/files/" + fileName;
         this.context = context;
         //Can't find file, can't get total length
-        File file = new File(fileName);
+        File file = new File(filePath);
         this.total = (int)file.length();
         this.buf  = new byte[FRAGMENT_SIZE];	
         this.nextBuf  = new byte[FRAGMENT_SIZE];	
@@ -78,12 +78,12 @@ public class CECS327InputStream extends InputStream {
     */
     protected void getBuff(int fragment) throws IOException
     {
-        FileDescriptor fd = new FileDescriptor();
-        AssetManager am = context.getAssets();
+        //FileDescriptor fd = new FileDescriptor();
+        //AssetManager am = context.getAssets();
         //AssetFileDescriptor afd = am.openFd("imperial.mp3");
-        //File file = new File(fileName);
-        //FileInputStream inputStream = new FileInputStream(file);
-        InputStream inputStream = am.open(fileName);
+        File file = new File(filePath);
+        InputStream inputStream = new FileInputStream(file);
+        //InputStream inputStream = am.open(fileName);
         inputStream.skip(fragment * FRAGMENT_SIZE);
         inputStream.read(nextBuf);
         inputStream.close(); 

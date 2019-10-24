@@ -140,7 +140,6 @@ public class AddMusicToPlaylistAdapter extends RecyclerView.Adapter<AddMusicToPl
     public String addMusicToPlaylist(String userName, String playlistName, Music music) {
         Gson gson = new Gson();
 
-
         JsonObject ret = new JsonObject();
 
         Proxy proxy = new Proxy(context);

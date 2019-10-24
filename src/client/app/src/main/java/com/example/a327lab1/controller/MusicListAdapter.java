@@ -6,6 +6,7 @@ import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.media.MediaDataSource;
 import android.media.MediaPlayer;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,25 +21,45 @@ import android.widget.TextView;
 import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
 import com.example.a327lab1.rpc.CECS327InputStream;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonObject;
 
+import java.io.Console;
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Classs to show the recycle view of the music list.
  */
 
 class AudioMediaSource extends MediaDataSource{
 
-    private InputStream inputStream;
+    private InputStream inputStream2;
+    private CECS327InputStream inputStream;
     private String fileName;
 
 
     //private CECS327InputStream is;
+    public AudioMediaSource(InputStream is)
+    {
+        inputStream2 = is;
+    }
 
-    public AudioMediaSource(InputStream fileName){
-        inputStream = fileName;
+    public AudioMediaSource(String fileName, Context context)
+    {
+        try
+        {
+            inputStream = new CECS327InputStream(fileName, context);
+        }
+        catch(IOException reeeeee)
+        {
+            reeeeee.printStackTrace();
+        }
+
     }
 
     @Override
@@ -109,6 +130,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Play the music!
                 Log.d(TAG, "onClick: clicked on: " + listOfMusic.get(position).getSong().getTitle());
 
@@ -117,33 +139,41 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     AssetManager am = context.getAssets();
 //                    AssetFileDescriptor afd = am.openFd("imperial.mp3");
 
-                    InputStream is = am.open("imperial.mp3");
-                    mds = new AudioMediaSource(is);
-                    mp = new MediaPlayer();
+                    mds = new AudioMediaSource("imperial.mp3", context);
+                    //mds = new AudioMediaSource(am.open("imperial.mp3"));
 
-                    mp.setDataSource(mds);
-                    mp.prepareAsync();
-                    mp.start();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                /*if(!mp.isPlaying())
+                if(mp != null)
                 {
+                    mp.stop();
+                    mp.release();
+                    mp = null;
+                }
+                else
+                {
+                    mp = new MediaPlayer();
                     mp.setDataSource(mds);
                     mp.prepareAsync();
-                    mp.start();
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            mp.start();
+                        }
+                    });
                     mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        public void onCompletion(MediaPlayer mp) {
-                            songStop(); // finish current activity
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mp.stop();
+                            mp.release();
+                            mp = null;
                         }
                     });
                 }
-                else if(mp.isPlaying())
-                {
-                    songStop();
-                }
-                 */
+
 
                 /*if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
@@ -176,12 +206,6 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
     @Override
     public int getItemCount() {
         return listOfMusic.size();
-    }
-    private void songStop()
-    {
-        mp.stop();
-        mp.release();
-        mp = new MediaPlayer();
     }
     /**
      * View Holder for the Music List Adapter that extends from the Recycle View.
