@@ -17,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ClientCommunicationProtocol {
     private static final int PORT = 9999;
-    private static final int TIMEOUT_DURATION = 10000; // 10 seconds
+    private static final int TIMEOUT_DURATION = 5000; // 5 seconds
 
     private DatagramSocket clientSocket;
     private InetAddress ipAddress;
@@ -38,12 +38,35 @@ public class ClientCommunicationProtocol {
 
     public void send(JsonObject request) {
         try {
+            ret = null;
+
             String message = request.toString();
+            String callSemantic = request.get("call semantics").getAsString();
 
             DatagramPacket outPacket = new DatagramPacket(message.getBytes(), message.length(), ipAddress, PORT);
 
-            clientSocket.send(outPacket);
-            ret = receive();
+            if (callSemantic.equals("maybe")) {
+                clientSocket.send(outPacket);
+                ret = receive();
+            } else if (callSemantic.equals("at-least-one")) {
+                boolean acknowledgement = false;
+                while(!acknowledgement) {
+                    clientSocket.send(outPacket);
+                    ret = receive();
+                    if (ret != null) {
+                        acknowledgement = true;
+                    }
+                }
+            } else if (callSemantic.equals("at-most-one")) {
+                boolean acknowledgement = false;
+                while(!acknowledgement) {
+                    clientSocket.send(outPacket);
+                    ret = receive();
+                    if (ret != null) {
+                        acknowledgement = true;
+                    }
+                }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

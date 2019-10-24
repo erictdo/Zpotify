@@ -28,7 +28,7 @@
     {
       "remoteMethod": "getUserPlaylist",
       "object": "UserService",
-      "call-semantics": "at-least-one"
+      "call semantics": "at-least-one"
     },
     {
       "remoteMethod": "addPlaylist",
