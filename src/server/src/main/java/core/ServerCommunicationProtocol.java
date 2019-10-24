@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
 
 public class ServerCommunicationProtocol extends Thread {
     private static final int PORT = 9999;
@@ -15,6 +16,8 @@ public class ServerCommunicationProtocol extends Thread {
     private DatagramSocket serverSocket;
     private DatagramPacket inPacket;
     private Dispatcher dispatcher;
+
+    private static HashMap<Integer,String> sendTracker;
 
     /**
      * Constructor for the ServerCommunicationProtocol
@@ -36,6 +39,9 @@ public class ServerCommunicationProtocol extends Thread {
             dispatcher.registerObject(new MusicService(), "MusicService");
             dispatcher.registerObject(new MP3Service(), "MP3Service");
             System.out.println("Initialized Dispatcher");
+
+            //Initialize sendTracker
+            sendTracker = new HashMap<Integer,String>();
 
         } catch (IOException e) {
             System.out.println(e);
@@ -106,25 +112,38 @@ public class ServerCommunicationProtocol extends Thread {
             try {
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                // This is the Method Json Object. See Notes below.
+                // Incoming JSON message from client
                 JsonObject inJsonMessage = gson.fromJson(inMessage, JsonObject.class);
 
-                // Get the values of the "Method" Object
-                String methodName = inJsonMessage.get("remoteMethod").getAsString();
+                // Get the call semantic of the "Method" Object
+                String callSemantic = inJsonMessage.get("call semantics").getAsString();
 
                 // Call dispatcher to return an outMessage
-                String outMessage = dispatcher.dispatch(inJsonMessage.toString());
-                byte[] outMessageBytes = outMessage.getBytes();
+                String outMessage;
 
                 // Send response to client
-                DatagramPacket outPacket = new DatagramPacket(outMessageBytes, outMessageBytes.length, clientAddress, port);
-                serverSocket.send(outPacket);
-                JsonObject ret;
+                if (callSemantic.equals("at-most-one")) {
+                    int requestID = inJsonMessage.get("requestID").getAsInt();
+                    if (sendTracker.containsKey(requestID)) {
+                        outMessage = sendTracker.get(requestID);
+                        DatagramPacket outPacket = new DatagramPacket(outMessage.getBytes() , outMessage.getBytes().length, clientAddress, port);
+                        serverSocket.send(outPacket);
+                    } else {
+                        outMessage = dispatcher.dispatch(inJsonMessage.toString());
+                        sendTracker.put(requestID, outMessage);
+                        DatagramPacket outPacket = new DatagramPacket(outMessage.getBytes(), outMessage.getBytes().length, clientAddress, port);
+                        serverSocket.send(outPacket);
+                    }
+                } else {
+                    outMessage = dispatcher.dispatch(inJsonMessage.toString());
+                    DatagramPacket outPacket = new DatagramPacket(outMessage.getBytes(), outMessage.getBytes().length, clientAddress, port);
+                    serverSocket.send(outPacket);
+                }
 
                 System.out.println(Thread.getAllStackTraces().keySet());
                 System.out.println("Sending response to client: " + clientAddress + "\n");
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.out.println(e);
                 System.out.println("Error occurred while handling client's request. See stack trace above.");
             }

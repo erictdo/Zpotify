@@ -23,6 +23,7 @@ public class Proxy {
     private static final int PORT = 9999;
     private Context context;
     private ClientCommunicationProtocol ccp;
+    private static int requestID = 1;
 
     public Proxy(Context context)
     {
@@ -46,7 +47,10 @@ public class Proxy {
         }
 
         jsonRequest.add("param", jsonParam);
+        jsonRequest.addProperty("requestID", Integer.toString(requestID));
         ccp.send(jsonRequest);
+        requestID++;
+
         JsonObject ret = ccp.getRet();
 
         return ret;

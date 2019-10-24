@@ -163,7 +163,7 @@ public class UserService extends Dispatcher {
     /** ~ Helper methods are below ~ */
 
     /**
-     * Updates the users.json file with the current userList
+     * Updates the usergetUserPlaylists.json file with the current userList
      */
     private void updateUserDatabase() {
         Serializer.updateUserJson(userList);
