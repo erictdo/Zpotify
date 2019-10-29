@@ -1,5 +1,7 @@
 package main.java.core;
 
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.File;
@@ -13,10 +15,10 @@ public class MP3Service {
 
   }
 
-  public String getSongChunk(Long key, Long fragment) throws FileNotFoundException, IOException {
+  public String getSongChunk(String key, Long fragment) throws FileNotFoundException, IOException {
     byte buf[] = new byte[FRAGMENT_SIZE];
 
-    File file = new File("./" + key);
+    File file = new File(key);
     FileInputStream inputStream = new FileInputStream(file);
     inputStream.skip(fragment * FRAGMENT_SIZE);
     inputStream.read(buf);
@@ -25,8 +27,8 @@ public class MP3Service {
     return Base64.getEncoder().encodeToString(buf);
   }
 
-  public Integer getFileSize(Long key) throws FileNotFoundException, IOException {
-    File file = new File("./" + key);
+  public Integer getFileSize(String key) throws FileNotFoundException, IOException {
+    File file = new File(key);
     Integer total = (int) file.length();
 
     return total;

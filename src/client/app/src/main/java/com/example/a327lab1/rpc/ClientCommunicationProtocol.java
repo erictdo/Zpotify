@@ -16,7 +16,7 @@ import java.net.UnknownHostException;
 import java.util.concurrent.ExecutionException;
 
 public class ClientCommunicationProtocol {
-    private static final int PORT = 9999;
+    private static final int PORT = 9998;
     private static final int TIMEOUT_DURATION = 5000; // 5 seconds
 
     private DatagramSocket clientSocket;

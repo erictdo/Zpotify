@@ -9,7 +9,7 @@ import java.net.*;
 import java.util.HashMap;
 
 public class ServerCommunicationProtocol extends Thread {
-    private static final int PORT = 9999;
+    private static final int PORT = 9998;
     private static final int FRAGMENT_SIZE = 8192;
     private byte[] buffer = new byte[FRAGMENT_SIZE];
 
@@ -37,7 +37,7 @@ public class ServerCommunicationProtocol extends Thread {
             dispatcher = new Dispatcher();
             dispatcher.registerObject(new UserService(), "UserService");
             dispatcher.registerObject(new MusicService(), "MusicService");
-            dispatcher.registerObject(new MP3Service(), "MP3Service");
+            dispatcher.registerObject(new MP3Handler(), "MP3Handler");
             System.out.println("Initialized Dispatcher");
 
             //Initialize sendTracker

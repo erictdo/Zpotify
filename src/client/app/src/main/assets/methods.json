@@ -51,8 +51,8 @@
       "call semantics": "at-most-one"
     },
     {
-      "remoteMethod": "MP3Handler",
-      "object": "MP3Service",
+      "remoteMethod": "getSongFragment",
+      "object": "MP3Handler",
       "call semantics": "at-least-one"
     }
   ]
