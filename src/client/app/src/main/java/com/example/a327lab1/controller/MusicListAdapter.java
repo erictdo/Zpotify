@@ -22,11 +22,15 @@ import com.example.a327lab1.R;
 import com.example.a327lab1.model.Music;
 import com.example.a327lab1.rpc.CECS327InputStream;
 import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import java.io.Console;
 import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -75,6 +79,31 @@ class AudioMediaSource extends MediaDataSource{
     @Override
     public void close() throws IOException {
         inputStream.close();
+    }
+}
+
+class ByteArrayMediaDataSource extends MediaDataSource {
+
+    private final byte[] data;
+
+    public ByteArrayMediaDataSource(byte []data) {
+        assert data != null;
+        this.data = data;
+    }
+    @Override
+    public int readAt(long position, byte[] buffer, int offset, int size) throws IOException {
+        System.arraycopy(data, (int)position, buffer, offset, size);
+        return size;
+    }
+
+    @Override
+    public long getSize() throws IOException {
+        return data.length;
+    }
+
+    @Override
+    public void close() throws IOException {
+        // Nothing to do here
     }
 }
 
@@ -135,28 +164,57 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                 Log.d(TAG, "onClick: clicked on: " + listOfMusic.get(position).getSong().getTitle());
 
                 try {
-                    FileDescriptor fd = new FileDescriptor();
-                    AssetManager am = context.getAssets();
+//                    FileDescriptor fd = new FileDescriptor();
+//                    AssetManager am = context.getAssets();
 //                    AssetFileDescriptor afd = am.openFd("imperial.mp3");
 
-                    mds = new AudioMediaSource("imperial.mp3", context);
+                    //mds = new AudioMediaSource("imperial.mp3", context);
                     //mds = new AudioMediaSource(am.open("imperial.mp3"));
+                    byte[] mp3ByteArray = getSongFromServer("imperial.mp3");
+                    String filePath = "/data/data/com.example.a327lab1/files/musicfile.3gp";
+                    File path=new File(filePath);
+                    path.setReadable(true, false);
 
+                    FileOutputStream fos = new FileOutputStream(path);
+                    fos.write(mp3ByteArray);
+                    fos.close();
+
+                    mp = new MediaPlayer();
+
+                    mds = new AudioMediaSource(filePath, context);
+
+                    mp.setDataSource(mds);
+
+                    mp.prepareAsync();
+
+                    mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                        @Override
+                        public void onCompletion(MediaPlayer mediaPlayer) {
+                            mp.release();
+                        }
+                    });
+
+                    mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mediaPlayer) {
+                            mp.start();
+                        }
+                    });
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
+                /*
                 if(mp != null)
                 {
                     mp.stop();
                     mp.release();
-                    mp = null;
+                    mp.reset();
+//                    mp = null;
                 }
                 else
                 {
-                    mp = new MediaPlayer();
-                    mp.setDataSource(mds);
                     mp.prepareAsync();
                     mp.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override
@@ -169,11 +227,14 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                         public void onCompletion(MediaPlayer mediaPlayer) {
                             mp.stop();
                             mp.release();
-                            mp = null;
+                            mp.reset();
+//                            mp = null;
                         }
                     });
                 }
 
+
+                 */
 
                 /*if (mp != null && !currentlyPlaying.equals(listOfMusic.get(position).getSong().getTitle())) {
                     mp.stop();
@@ -197,6 +258,25 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
             }
         });
+    }
+
+    public byte[] getSongFromServer(String songID) {
+        Proxy proxy = new Proxy(context);
+        JsonObject ret;
+        byte[] retByte = {};
+        String[] array2 = {songID, "0"};
+        do {
+            ret = proxy.synchExecution("getSongFragment", array2);
+            JsonElement jElement = new JsonParser().parse(ret.get("ret").getAsString());
+            ret = jElement.getAsJsonObject();
+            byte[] serverRet = ret.get("data").getAsString().getBytes();
+            byte[] current = Arrays.copyOf(retByte, retByte.length);
+            retByte = new byte[serverRet.length + current.length];
+            System.arraycopy(current, 0, retByte, 0, current.length);
+            System.arraycopy(serverRet, 0, retByte, current.length, serverRet.length);
+            array2[1] = ret.get("currentIndex").getAsString();
+        } while(ret.get("keepPulling").getAsString().equals("true"));
+        return retByte;
     }
 
     /**

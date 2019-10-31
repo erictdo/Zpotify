@@ -61,7 +61,7 @@ public class CECS327InputStream extends InputStream {
     */
     public CECS327InputStream(String fileName, Context context) throws IOException {
         //pass inputstream into constructor
-        this.filePath = "/data/data/com.example.a327lab1/files/" + fileName;
+        this.filePath = fileName;
         this.context = context;
         //Can't find file, can't get total length
         File file = new File(filePath);
