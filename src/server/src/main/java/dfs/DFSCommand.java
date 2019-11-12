@@ -107,7 +107,7 @@ public class DFSCommand
                     System.out.println("Must provide filename to append to and filepath of data to be appended");
                 }
             }
-            if (result[0].equals("move"))
+            if (result[0].equals("move")) //Rename
             {
                 if (result.length == 3)
                 {
@@ -132,11 +132,9 @@ public class DFSCommand
     private void dfsMenu() {
         System.out.println("DFS Command Menu");
         System.out.println(" ls");
-        System.out.println(" touch");
         System.out.println(" delete");
         System.out.println(" read");
-        System.out.println(" tail");
-        System.out.println(" head");
+        System.out.println(" append");
         System.out.println(" move");
         System.out.println(" quit (to quit DFS Command and start server)");
         System.out.print("Enter a command: ");
