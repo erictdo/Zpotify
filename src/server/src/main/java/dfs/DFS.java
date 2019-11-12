@@ -37,15 +37,38 @@ import java.util.*;
 
 public class DFS
 {
-    
+
+
+    /**
+     * After page has been mapped, remove it from the file's pages in metadata
+     *
+     * @param file - Name of the file being edited
+     * @throws Exception
+     */
+    public void onPageComplete(String file) throws Exception {
+        FilesJson metadata = this.readMetaData();
+        for (int i = metadata.file.size() - 1; i >= 0; i--) {
+            if (metadata.file.get(i).getName().equals(file)) {
+                metadata.file.get(i).decrementRef();
+                break;
+            }
+        }
+        writeMetaData(metadata);
+    }
 
     public class PagesJson
     {
+
+        String lowerBoundInterval;
         Long guid;
         Long size;
         public PagesJson()
         {
             
+        }
+
+        public long getGUID() {
+            return this.guid;
         }
         // getters
         // setters
@@ -53,13 +76,28 @@ public class DFS
 
     public class FileJson 
     {
+        int numberOfPages;
         String name;
         Long   size;
         ArrayList<PagesJson> pages;
+        int referenceCount;
+
         public FileJson()
         {
             
         }
+
+        public String getName() {
+            return this.name;
+        }
+
+        /**
+         * Decrement object's reference count when object is no longer in use
+         */
+        public void decrementRef() {
+            this.referenceCount--;
+        }
+
         // getters
         // setters
     };

@@ -142,6 +142,23 @@ public class UserService extends Dispatcher {
         return responseJO.toString();
     }
 
+    public String deletePlaylist(String userName, String playlistName) {
+        System.out.println("Deleting Playlist" + playlistName + " to " + userName + "'s profile");
+        JsonObject responseJO = new JsonObject();
+
+        for (int i = 0 ; i < userList.size() ; i++) {
+            if (userList.get(i).getName().equals(userName)) {
+                userList.get(i).deletePlaylist(playlistName);
+                updateUserDatabase();
+
+                responseJO.addProperty("deletePlaylist", true);
+                return responseJO.toString();
+            }
+        }
+        //responseJO.remove("userNotFound", false);
+        return responseJO.toString();
+    }
+
     public String getUserPlaylist(String userName, String playlistName) {
         Gson gson = new Gson();
         JsonObject responseJO = new JsonObject();

@@ -2,6 +2,7 @@ package com.example.a327lab1.controller;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,6 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a327lab1.R;
+import com.example.a327lab1.rpc.Proxy;
+import com.google.gson.JsonObject;
+import com.example.a327lab1.data.Session;
 
 import java.util.ArrayList;
 
@@ -29,6 +33,9 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
     private String userName;
     private ArrayList<String> playlistNames;
     private Context context;
+    AssetManager am;
+    public static Context cxt;
+    static Session session;
 
     /**
      * Constructor method for playlist adapter.
@@ -132,7 +139,17 @@ public class PlaylistAdapter extends RecyclerView.Adapter<PlaylistAdapter.ViewHo
 
             rename.setOnMenuItemClickListener(onEditMenu);
             delete.setOnMenuItemClickListener(onEditMenu);
+
         }
+
+//        public void deleteSongFromPlaylist(String pName) {
+//            Proxy proxy = new Proxy(cxt);
+//            String[] array = {  session.getUsername(),
+//                    pName,
+//                    songID2                  };
+//            JsonObject ret = proxy.synchExecution("deleteSongFromPlaylist", array);
+//            session.setUser(ret.toString());
+//        }
 
         /**
          * On click listener for the playlist menu.

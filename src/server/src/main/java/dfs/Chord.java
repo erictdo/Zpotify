@@ -6,13 +6,16 @@ package main.java.dfs; /**
 * @since   03-3-2019
 */
 
-import java.rmi.*;
-import java.rmi.registry.*;
-import java.rmi.server.*;
-import java.net.*;
-import java.util.*;
-import java.io.*;
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 
+import java.io.*;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.*;
 /**
  * Chord extends from UnicastRemoteObject to support RMI.
  * It implements the ChordMessageInterface
@@ -35,8 +38,13 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
     int nextFinger;
     // GUID
     long guid;
+
+    int chordSize = 0;
     // path prefix
     String prefix;
+
+    //
+    HashMap<Long, TreeMap<String, ArrayList>> myPageMap = new HashMap<>();
 
 
 
@@ -547,6 +555,198 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         }
         catch(RemoteException e){
 	       System.out.println("Cannot retrive id of successor or predecessor");
+        }
+    }
+    public String getPrefix() {
+        return prefix;
+    }
+
+    /**
+     * @param source - GUID of the chord peer that initiates onChordSize
+     * @param n      - number of nodes counted, init 1
+     * @return n - the number of nodes in the chord
+     */
+    public void onChordSize(Long source, int n) throws RemoteException {
+
+        if (source != this.guid) {
+            this.successor.onChordSize(source, ++n);
+        } else {
+            this.chordSize = n;
+        }
+        // When source == this.guid then all nodes in the chord have been counted
+
+    }
+
+    /**
+     * Store tree in the page in order
+     *
+     * @param page - Page receiving TreeMap Data
+     */
+    public void bulk(DFS.PagesJson page, String file) throws Exception {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+        try {
+            long pageGuid = page.getGUID();
+            if (myPageMap.get(pageGuid) != null) {
+                put(pageGuid, gson.toJson(myPageMap.get(pageGuid)));
+                myPageMap.remove(pageGuid);
+            }
+        } catch (Exception e) {
+            System.out.println("Error: Chord.bulk ");
+            e.printStackTrace();
+
+        }
+    }
+
+    /**
+     * Runs map for mapreduce
+     *
+     * @param pageGuid    - Page being mapped
+     * @param mapper      - Mapper object performing the mapping
+     * @param coordinator - DFS coordinating the mapreduce (this)
+     * @param file        - Name of the file being mapped
+     * @throws Exception
+     */
+    public void mapContext(long pageGuid, MapReduceInterface mapper, IDFSInterface coordinator, String file) throws Exception {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+        RemoteInputFileStream rifs = get(pageGuid);
+        rifs.connect();
+        JsonArray page = gson.fromJson(new JsonReader(new InputStreamReader(rifs)), JsonArray.class);
+        for (int i = 0; i < page.size(); i++) {
+            int index = i;
+            JsonObject value = (JsonObject) page.get(index);
+            mapper.map(Integer.toString(index), value, coordinator, this, file);
+        }
+        coordinator.onPageComplete(file);
+    }
+
+
+    /**
+     * Runs reduce for mapreduce
+     *
+     * @param pageGuid    - GUID for page being reduced
+     * @param reducer     - Mapper object performing the reduce
+     * @param coordinator - DFS coordinating the reduce (this)
+     * @param file        - Name of the file being reduced
+     * @throws IOException
+     */
+    public void reduceContext(long pageGuid, MapReduceInterface reducer, DFS coordinator, String file) throws Exception {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+
+        try {
+            RemoteInputFileStream rifs = get(pageGuid);
+            rifs.connect();
+            TreeMap<String, ArrayList> page = gson.fromJson(new JsonReader(new InputStreamReader(rifs)), TreeMap.class);
+            if (page != null) {
+                Set<Map.Entry<String, ArrayList>> entrySet = page.entrySet();
+
+
+                for (Map.Entry<String, ArrayList> entry : entrySet) {
+                    reducer.reduce(entry.getKey(), entry.getValue(), (IDFSInterface) coordinator, this, file);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        coordinator.onPageComplete(file);
+    }
+
+    @Override
+    public void emit(String key, JsonElement value, IDFSInterface context, String file) throws Exception {
+        key = key.toUpperCase();
+
+        DFS.FilesJson metadata = context.readMetaData();
+
+        DFS.FileJson fj = null;
+        for (int i = metadata.file.size() - 1; i >= 0; i--) {
+            fj = metadata.file.get(i);
+            if (fj.getName().equals(file)) {
+                break;
+            }
+        }
+        for (int i = 0; i < fj.numberOfPages - 1; i++) {
+            DFS.PagesJson page1 = fj.pages.get(i);
+            DFS.PagesJson page2 = fj.pages.get(i + 1);
+
+            String indexString = new String(context.getIndex());
+
+            int keyLetter1;
+            int keyLetter2;
+
+            try {
+                keyLetter1 = indexString.indexOf(key.charAt(0));
+                keyLetter2 = indexString.indexOf(key.charAt(1));
+            } catch (StringIndexOutOfBoundsException e) {
+                break;
+            }
+
+
+            int pg1Letter1 = indexString.indexOf(page1.lowerBoundInterval.charAt(0));
+            int pg2Letter1 = indexString.indexOf(page2.lowerBoundInterval.charAt(0));
+            int pg1Letter2 = indexString.indexOf(page1.lowerBoundInterval.charAt(1));
+            int pg2Letter2 = indexString.indexOf(page2.lowerBoundInterval.charAt(1));
+
+            if ((keyLetter1 == pg1Letter1 && (keyLetter2 >= pg1Letter2 || key.charAt(1) == ' ')) ||
+                    (keyLetter1 == pg2Letter1 && keyLetter2 < pg2Letter2) ||
+                    (keyLetter1 > pg1Letter1 && keyLetter1 < pg2Letter1)) {
+                ChordMessageInterface peer = locateSuccessor(page1.getGUID());
+                peer.addKeyValue(key, value.toString(), file, page1.getGUID());
+                break;
+            } else if (i == fj.numberOfPages - 2) {
+                ChordMessageInterface peer = locateSuccessor(page2.getGUID());
+                peer.addKeyValue(key, value.toString(), file, page2.getGUID());
+            }
+        }
+
+    }
+
+    /**
+     * Adds key, value pair to TreeMap data structure. If key exists, add value to it. If key not in TreeMap, make a new entry
+     *
+     * @param key   - Key value in string format
+     */
+    public void addKeyValue(String key, String valueString, String filename, long guid) throws Exception {
+        Gson gson = new GsonBuilder()
+                .setPrettyPrinting()
+                .create();
+
+        JsonParser parser = new JsonParser();
+
+        JsonElement value = null;
+        if (filename.endsWith(".map"))
+            value = parser.parse(valueString).getAsJsonObject();
+        else
+            value = parser.parse(valueString).getAsJsonArray();
+
+        TreeMap<String, ArrayList> myMap = null;
+        try {
+            myMap = myPageMap.get(guid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (myMap == null) {
+            myPageMap.put(guid, new TreeMap<>());
+            myMap = myPageMap.get(guid);
+        }
+
+        if (filename.endsWith(".map")) {
+            if (!myMap.containsKey(key)) {                            // If key is not in map, add an entry
+                ArrayList tmpList = new ArrayList();
+                myMap.put(key, tmpList);
+            }
+            myMap.get(key).add(value);                              // Add value to map
+        } else {
+            ArrayList values = gson.fromJson(value, ArrayList.class);
+            myMap.put(key, values);
         }
     }
 }

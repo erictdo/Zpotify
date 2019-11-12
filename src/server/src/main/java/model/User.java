@@ -47,7 +47,7 @@ public class User {
         this.listOfPlaylists.add(newPlaylist);
     }
 
-    public void deletePlaylist(int index) {
+    public void deletePlaylist(String index) {
         this.listOfPlaylists.remove(index);
     }
 
