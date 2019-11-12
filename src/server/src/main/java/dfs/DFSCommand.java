@@ -60,11 +60,6 @@ public class DFSCommand
             {
                 dfs.lists();     
             }
-            if (result[0].equals("touch"))
-            {
-                //TODO
-                //dfs.touch();
-            }
             if (result[0].equals("delete"))
             {
                 if (result.length == 2)
@@ -99,30 +94,6 @@ public class DFSCommand
                 else
                 {
                     System.out.println("Must provide file name and page number");
-                }
-            }
-            if (result[0].equals("tail"))
-            {
-                if (result.length == 2)
-                {
-                    //TODO
-                    //dfs.tail(result[1]);
-                }
-                else
-                {
-                    System.out.println("Must provide file name");
-                }
-            }
-            if (result[0].equals("head"))
-            {
-                if (result.length == 2)
-                {
-                    //TODO
-                    //dfs.head(result[0]);
-                }
-                else
-                {
-                    System.out.println("Must provide a file name");
                 }
             }
             if (result[0].equals("append"))
