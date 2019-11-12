@@ -672,7 +672,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
                 break;
             }
         }
-        for (int i = 0; i < fj.numberOfPages - 1; i++) {
+        for (int i = 0; i < fj.getNumberOfPages() - 1; i++) {
             DFS.PagesJson page1 = fj.pages.get(i);
             DFS.PagesJson page2 = fj.pages.get(i + 1);
 
@@ -700,7 +700,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
                 ChordMessageInterface peer = locateSuccessor(page1.getGUID());
                 peer.addKeyValue(key, value.toString(), file, page1.getGUID());
                 break;
-            } else if (i == fj.numberOfPages - 2) {
+            } else if (i == fj.getNumberOfPages() - 2) {
                 ChordMessageInterface peer = locateSuccessor(page2.getGUID());
                 peer.addKeyValue(key, value.toString(), file, page2.getGUID());
             }
