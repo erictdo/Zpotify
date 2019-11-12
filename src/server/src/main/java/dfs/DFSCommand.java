@@ -43,7 +43,14 @@ public class DFSCommand
 
             if (result[0].equals("join")  && result.length > 1)
             {
-                dfs.join("127.0.0.1", Integer.parseInt(result[1]));
+                if (result.length == 2)
+                {
+                    dfs.join("127.0.0.1", Integer.parseInt(result[1]));
+                }
+                else
+                {
+                    System.out.println("Must provide port to join");
+                }
             }
             if (result[0].equals("print"))
             {
