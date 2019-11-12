@@ -60,11 +60,6 @@ public class DFSCommand
             {
                 dfs.lists();     
             }
-            if (result[0].equals("touch"))
-            {
-                //TODO
-                //dfs.touch();
-            }
             if (result[0].equals("delete"))
             {
                 if (result.length == 2)
@@ -101,30 +96,6 @@ public class DFSCommand
                     System.out.println("Must provide file name and page number");
                 }
             }
-            if (result[0].equals("tail"))
-            {
-                if (result.length == 2)
-                {
-                    //TODO
-                    //dfs.tail(result[1]);
-                }
-                else
-                {
-                    System.out.println("Must provide file name");
-                }
-            }
-            if (result[0].equals("head"))
-            {
-                if (result.length == 2)
-                {
-                    //TODO
-                    //dfs.head(result[0]);
-                }
-                else
-                {
-                    System.out.println("Must provide a file name");
-                }
-            }
             if (result[0].equals("append"))
             {
                 if (result.length == 3)
@@ -136,7 +107,7 @@ public class DFSCommand
                     System.out.println("Must provide filename to append to and filepath of data to be appended");
                 }
             }
-            if (result[0].equals("move"))
+            if (result[0].equals("move")) //Rename
             {
                 if (result.length == 3)
                 {
@@ -161,11 +132,9 @@ public class DFSCommand
     private void dfsMenu() {
         System.out.println("DFS Command Menu");
         System.out.println(" ls");
-        System.out.println(" touch");
         System.out.println(" delete");
         System.out.println(" read");
-        System.out.println(" tail");
-        System.out.println(" head");
+        System.out.println(" append");
         System.out.println(" move");
         System.out.println(" quit (to quit DFS Command and start server)");
         System.out.print("Enter a command: ");
