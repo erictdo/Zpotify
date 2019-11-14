@@ -351,7 +351,7 @@ public class DFS
      * delete file
      *
      * @param fileName Name of the file
-     *
+     */
     public void delete(String fileName) throws Exception
     {
         FilesJson metadata = readMetaData();
