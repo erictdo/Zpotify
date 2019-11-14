@@ -28,9 +28,9 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
      // rmi registry for lookup the remote objects.
     Registry registry;
-    // Successor peeer
+    // Successor peer
     ChordMessageInterface successor;
-    // Predecessor peeer
+    // Predecessor peer
     ChordMessageInterface predecessor;
     // array of fingers
     ChordMessageInterface[] finger;
@@ -598,65 +598,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             e.printStackTrace();
 
         }
-    }
-
-    /**
-     * Runs map for mapreduce
-     *
-     * @param pageGuid    - Page being mapped
-     * @param mapper      - Mapper object performing the mapping
-     * @param coordinator - DFS coordinating the mapreduce (this)
-     * @param file        - Name of the file being mapped
-     * @throws Exception
-     */
-    public void mapContext(long pageGuid, MapReduceInterface mapper, IDFSInterface coordinator, String file) throws Exception {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-
-        RemoteInputFileStream rifs = get(pageGuid);
-        rifs.connect();
-        JsonArray page = gson.fromJson(new JsonReader(new InputStreamReader(rifs)), JsonArray.class);
-        for (int i = 0; i < page.size(); i++) {
-            int index = i;
-            JsonObject value = (JsonObject) page.get(index);
-            mapper.map(Integer.toString(index), value, coordinator, this, file);
-        }
-        coordinator.onPageComplete(file);
-    }
-
-
-    /**
-     * Runs reduce for mapreduce
-     *
-     * @param pageGuid    - GUID for page being reduced
-     * @param reducer     - Mapper object performing the reduce
-     * @param coordinator - DFS coordinating the reduce (this)
-     * @param file        - Name of the file being reduced
-     * @throws IOException
-     */
-    public void reduceContext(long pageGuid, MapReduceInterface reducer, DFS coordinator, String file) throws Exception {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-
-
-        try {
-            RemoteInputFileStream rifs = get(pageGuid);
-            rifs.connect();
-            TreeMap<String, ArrayList> page = gson.fromJson(new JsonReader(new InputStreamReader(rifs)), TreeMap.class);
-            if (page != null) {
-                Set<Map.Entry<String, ArrayList>> entrySet = page.entrySet();
-
-
-                for (Map.Entry<String, ArrayList> entry : entrySet) {
-                    reducer.reduce(entry.getKey(), entry.getValue(), (IDFSInterface) coordinator, this, file);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        coordinator.onPageComplete(file);
     }
 
     @Override
