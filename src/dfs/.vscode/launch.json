@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - DFSCommand",
+      "request": "launch",
+      "mainClass": "main.java.dfs.DFSCommand"
+    }
+  ]
+}

@@ -141,9 +141,9 @@ public class DFSCommand
 
     }
     
-//    static public void main(String args[]) throws Exception
-//    {
-//        Gson gson = new Gson();
+    static public void main(String args[]) throws Exception
+    {
+        Gson gson = new Gson();
 //        RemoteInputFileStream in = new RemoteInputFileStream("music.json", false);
 //        in.connect();
 //        Reader targetReader = new InputStreamReader(in);
@@ -160,5 +160,10 @@ public class DFSCommand
 //        {
 //            DFSCommand dfsCommand = new DFSCommand( Integer.parseInt(args[0]), 0);
 //        }
-//    }
+        try {
+            new DFSCommand();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
