@@ -35,30 +35,24 @@ public class DFSCommand
 
         // User interface:
         // join, ls, touch, delete, read, tail, head, append, move
-        while (!line.equals("quit"))
-        {
-            dfsMenu();
-
+        while (!line.equals("quit")) {
             String[] result = line.split("\\s");
 
-            if (result[0].equals("join")  && result.length > 1)
-            {
-                if (result.length == 2)
-                {
+            if (result[0].equals("join") && result.length > 1) {
+                if (result.length == 2) {
                     dfs.join("127.0.0.1", Integer.parseInt(result[1]));
-                }
-                else
-                {
+                } else {
                     System.out.println("Must provide port to join");
                 }
             }
-            if (result[0].equals("print"))
-            {
-                dfs.print();     
+            if (result[0].equals("print")) {
+                dfs.print();
             }
-            if (result[0].equals("ls"))
-            {
-                dfs.lists();     
+            if (result[0].equals("ls")) {
+                dfs.lists();
+            }
+            if (result[0].equals("touch") && result.length == 2) {
+                dfs.create(result[1]);
             }
             if (result[0].equals("delete"))
             {

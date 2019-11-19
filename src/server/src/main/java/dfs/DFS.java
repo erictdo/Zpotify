@@ -1,5 +1,6 @@
 package main.java.dfs;
 
+import java.io.File;
 import java.util.*;
 import java.nio.file.*;
 import java.math.BigInteger;
@@ -172,6 +173,10 @@ public class DFS
         // setters
         public void setName(String name) { this.name = name; }
         public void setFiles(List<FileJson> file) { this.file = file; }
+
+        public void addFile(FileJson f) {
+            this.file.add(f);
+        }
     };
     
     
@@ -253,9 +258,10 @@ public class DFS
     public FilesJson readMetaData() throws Exception
     {
         FilesJson filesJson = null;
+        long guid = md5("Metadata");
+
         try {
             Gson gson = new Gson();
-            long guid = md5("Metadata");
 
             System.out.println("GUID " + guid);
             ChordMessageInterface peer = chord.locateSuccessor(guid);
@@ -268,7 +274,15 @@ public class DFS
             filesJson= gson.fromJson(strMetaData, FilesJson.class);
         } catch (Exception ex)
         {
+            File metadata = new File(this.chord.getPrefix() + guid);       // Create file object with filepath
+            metadata.createNewFile();                                         // Create the physical file
+
+            // Create initial data for metadata
             filesJson = new FilesJson();
+            filesJson.addFile(new FileJson("Metadata", Long.valueOf(0)));   // Add metadata entry
+
+            // Write data to metadata file
+            writeMetaData(filesJson);
         }
         return filesJson;
     }
