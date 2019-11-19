@@ -335,16 +335,15 @@ public class DFS
         // Write Metadata
         FilesJson metadata = readMetaData();
 
-        for(FileJson file : metadata.file)
-        {
-            if(file.getName().equals(oldName))
-            {
-                file.incrementRef();                    // Increment referenceCount
-                writeMetaData(metadata);                // Update metadata with new reference count
-                file.setName(newName);                  // Change old file name to newName
-                file.setWriteTS(date.getTime());        // Update write timestamp
-                file.decrementRef();                    // Decrement referenceCount
-                writeMetaData(metadata);                // Update metadata
+        for (int i = 0; i < metadata.file.size(); i++) {
+            if (metadata.file.get(i).getName().equals(oldName)) {
+                System.out.println("Move file found!\n");
+                metadata.file.get(i).incrementRef();                    // Increment referenceCount
+                writeMetaData(metadata);                                // Update metadata with new reference count
+                metadata.file.get(i).name = newName;                    // Change old file name to newName
+                metadata.file.get(i).writeTS = date.getTime();          // Update write timestamp
+                metadata.file.get(i).decrementRef();                    // Decrement referenceCount
+                writeMetaData(metadata);                                // Update metadata
                 break;
             }
         }
