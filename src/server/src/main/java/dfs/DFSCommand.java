@@ -126,6 +126,7 @@ public class DFSCommand
     private void dfsMenu() {
         System.out.println("DFS Command Menu");
         System.out.println(" ls");
+        System.out.println(" create");
         System.out.println(" delete");
         System.out.println(" read");
         System.out.println(" append");

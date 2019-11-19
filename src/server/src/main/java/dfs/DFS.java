@@ -34,7 +34,7 @@ import com.google.gson.Gson;
 public class DFS
 {
 
-    Date date;
+    Date date = new Date();
     /**
      * After page has been mapped, remove it from the file's pages in metadata
      *
