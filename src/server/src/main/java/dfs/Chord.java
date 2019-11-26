@@ -198,7 +198,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
     @Override
     public String search(long guidObject, String query) throws RemoteException {
         String result = "";
-        String jsonString = "";
+        StringBuilder jsonString = new StringBuilder();
         JsonObject obj = null;
 
         int i;
@@ -210,7 +210,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
             while((i = rifs.read()) != -1)
             {
-                jsonString += Character.toString((char)i);
+                jsonString.append(Character.toString((char)i));
                 System.out.println("We are here!");
             }
             System.out.println("We are here now!");
@@ -221,7 +221,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         }
 
         //Error, probably a formatting error
-        obj = new JsonParser().parse(jsonString).getAsJsonObject();
+        obj = new JsonParser().parse(jsonString.toString()).getAsJsonObject();
 
         for (JsonElement jElem : obj.getAsJsonArray())
         {
