@@ -545,6 +545,10 @@ public class DFS
         }
     }
 
+    public void search(long pageGuid, String song) throws Exception{
+        chord.search(pageGuid, "song");
+    }
+
     /**
      * Finds the specified file in the Metadata.
      */

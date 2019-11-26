@@ -130,6 +130,18 @@ public class DFSCommand
                     System.out.println("Must provide a file name and its new name");
                 }
             }
+            else if (result[0].equals("search"))
+            {
+                if (result.length == 4)
+                {
+                    long pageGuid = 0;
+                    dfs.search(pageGuid, "song");
+                }
+                else
+                {
+                    System.out.println("Must provide a song name");
+                }
+            }
             else if (result[0].equals("leave"))
             {
                 dfs.leave();
@@ -171,6 +183,7 @@ public class DFSCommand
         System.out.println(" ls");
         System.out.println(" touch");
         System.out.println(" delete");
+        System.out.println(" search");
         System.out.println(" read");
         System.out.println(" append");
         System.out.println(" move");
