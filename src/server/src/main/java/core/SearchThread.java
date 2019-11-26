@@ -40,6 +40,28 @@ public class SearchThread implements Runnable {
 		return searchResult;
 	}
 
+	@Override
+	public void run() {
+		List<Music> music = null;
+		Long pageGuid = this.file.getPages().get(page).getGUID();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		Type type = new TypeToken<List<Music>>() {}.getType();
+		try {
+			ChordMessageInterface peer = dfs.getChord().locateSuccessor(pageGuid);
+			String searchResultString = peer.search(pageGuid,search);
+			music = gson.fromJson(searchResultString, type);
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		this.searchResult = music;
+		System.out.println("Thread " + this.page);
+	}
+
 //	@Override
 //	public void run() {
 //		List<Music> music = null;
@@ -59,56 +81,16 @@ public class SearchThread implements Runnable {
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-//		System.out.println(music.size());
 //		List<Music> searchedMusicList = new ArrayList<>();
 //
-//		for(Music m : music){
-//			if(m.getSong().getTitle().contains(text)){
-//				searchedMusicList.add(m);
-//				break;
-//			}
-//			if(m.getArtist().getName().contains(text)){
-//				searchedMusicList.add(m);
-//				break;
-//			}
-//			if(m.getArtist().getTerms().contains(text)){
-//				searchedMusicList.add(m);
-//				break;
-//			}
-//		}
+//		Stream<Music> stream = music.stream()
+//				.filter(m -> m.getSong().getTitle().toLowerCase().contains(search.toLowerCase())
+//						|| m.getArtist().getName().toLowerCase().contains(search.toLowerCase())
+//						|| m.getArtist().getTerms().toLowerCase().contains(search.toLowerCase()));
+//
+//		searchedMusicList = stream.collect(Collectors.toList());
 //
 //		this.searchResult = searchedMusicList;
 //		System.out.println("Thread " + this.page);
 //	}
-	@Override
-	public void run() {
-		List<Music> music = null;
-		Long pageGuid = this.file.getPages().get(page).getGUID();
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		Type type = new TypeToken<List<Music>>() {}.getType();
-		try {
-			ChordMessageInterface succ = dfs.getChord().locateSuccessor(pageGuid);
-			System.out.println(Long.toString(succ.getId()) + "/repository/" + Long.toString(pageGuid));
-			FileReader reader = new FileReader(Long.toString(succ.getId()) + "/repository/" + Long.toString(pageGuid));
-			music = gson.fromJson(reader, type);
-			reader.close();
-		}catch(FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		List<Music> searchedMusicList = new ArrayList<>();
-
-		Stream<Music> stream = music.stream()
-				.filter(m -> m.getSong().getTitle().toLowerCase().contains(search.toLowerCase())
-						|| m.getArtist().getName().toLowerCase().contains(search.toLowerCase())
-						|| m.getArtist().getTerms().toLowerCase().contains(search.toLowerCase()));
-
-		searchedMusicList = stream.collect(Collectors.toList());
-
-		this.searchResult = searchedMusicList;
-		System.out.println("Thread " + this.page);
-	}
 }
