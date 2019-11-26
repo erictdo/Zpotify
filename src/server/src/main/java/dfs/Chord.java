@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -194,7 +195,49 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         file.delete();
     }
 
-/**
+    @Override
+    public String search(long guidObject, String query) throws RemoteException {
+        String result = "";
+        String jsonString = "";
+        JsonObject obj = null;
+
+        int i;
+        char c;
+        try
+        {
+            InputStream is = get(guidObject);
+
+            while((i = is.read()) != -1)
+            {
+                jsonString += Character.toString((char)i);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        obj = new JsonParser().parse(jsonString).getAsJsonObject();
+
+        for (JsonElement jElem : obj.getAsJsonArray())
+        {
+            JsonObject jo = jElem.getAsJsonObject();
+            if(jo.get("song").getAsJsonObject().get("title").getAsString().contains(query) ||
+                    jo.get("song").getAsJsonObject().get("year").getAsString().contains(query) ||
+                    jo.get("artist").getAsJsonObject().get("name").getAsString().contains(query))
+            {
+                result += jElem.getAsString();
+            }
+        }
+
+        if (result != null)
+        {
+            return result;
+        }
+        else return null;
+    }
+
+    /**
  * returns the id of the peer
  */
     public long getId() throws RemoteException {
