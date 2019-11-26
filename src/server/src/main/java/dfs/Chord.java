@@ -197,8 +197,8 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
     @Override
     public String search(long guidObject, String query) throws RemoteException {
-        String result = "";
         StringBuilder jsonString = new StringBuilder();
+        StringBuilder result = new StringBuilder();
         JsonObject obj = null;
 
         int i;
@@ -211,7 +211,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             while((i = rifs.read()) != -1)
             {
                 jsonString.append(Character.toString((char)i));
-                System.out.println("We are here!");
             }
             System.out.println("We are here now!");
         }
@@ -221,22 +220,25 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         }
 
         //Error, probably a formatting error
-        obj = new JsonParser().parse(jsonString.toString()).getAsJsonObject();
+        var jsonThing = new JsonParser().parse(jsonString.toString()).getAsJsonArray();
 
-        for (JsonElement jElem : obj.getAsJsonArray())
+        for (JsonElement jElem : jsonThing)
         {
             JsonObject jo = jElem.getAsJsonObject();
-            if(jo.get("song").getAsJsonObject().get("title").getAsString().contains(query) ||
-                    jo.get("song").getAsJsonObject().get("year").getAsString().contains(query) ||
-                    jo.get("artist").getAsJsonObject().get("name").getAsString().contains(query))
+            String jSongTitle = jo.get("song").getAsJsonObject().get("title").getAsString();
+            String jSongYear = jo.get("song").getAsJsonObject().get("year").getAsString();
+            String jArtistName = jo.get("artist").getAsJsonObject().get("name").getAsString();
+            if(jSongTitle.contains(query) ||
+                    jSongYear.contains(query) ||
+                    jArtistName.contains(query))
             {
-                result += jElem.getAsString();
+                result.append(jo.toString());
             }
         }
 
         if (result != null)
         {
-            return result;
+            return result.toString();
         }
         else return null;
     }
