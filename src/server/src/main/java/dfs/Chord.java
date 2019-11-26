@@ -12,6 +12,7 @@ import com.google.gson.stream.JsonReader;
 
 import java.io.*;
 import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -194,7 +195,45 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         file.delete();
     }
 
-/**
+    @Override
+    public String search(long guidObject, String query) throws RemoteException {
+        String result = "";
+        String jsonString = "";
+        JsonObject obj = null;
+
+        int i;
+        char c;
+        try
+        {
+            InputStream is = get(guidObject);
+            obj = new JsonParser().parse(jsonString).getAsJsonObject();
+            while((i = is.read()) != -1)
+            {
+                jsonString += (char)i;
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        //obj.get("song").getAsJsonObject().get("title").getAsString()
+        /*
+        Unsure about how to implement the rest but I was planning on converting the JsonObject into a JsonArray that
+         splits the page. Then, in a for loop, I would go through each JsonArray and check the value of specific
+         properties such as "song" and "title" and sees if the value contains the query. If so, it would parse the
+         current JsonArray into a String and appends it to the String result.
+         */
+        JsonArray jArray = obj.getAsJsonArray();
+
+        JsonElement jElement = new JsonParser().parse(obj.get("song").getAsString());
+        JsonObject a = jElement.getAsJsonObject();
+        String b = a.get("title").getAsString();
+
+        return null;
+    }
+
+    /**
  * returns the id of the peer
  */
     public long getId() throws RemoteException {
