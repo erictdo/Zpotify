@@ -173,6 +173,7 @@ public class DFS
         public int getReferenceCount() { return referenceCount; }
         public int getNumberOfPages() { return numberOfPages; }
         public int getMaxPageSize() { return maxPageSize; }
+        public ArrayList<PagesJson> getPages() { return pages; }
         // setters
         public void setName(String name) { this.name = name; }
         public void setSize(Long size) { this.size = size; }
