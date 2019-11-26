@@ -92,7 +92,7 @@ public class DFSCommand
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                         var chunks =
-                                getMusicJsonChunks(result[2], 10);
+                                getMusicJsonChunks(result[2], 50);
 
                         System.out.println("Adding pages to music.json...");
                         int i = 0;

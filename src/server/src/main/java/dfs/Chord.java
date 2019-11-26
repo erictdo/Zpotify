@@ -205,18 +205,22 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         char c;
         try
         {
-            InputStream is = get(guidObject);
+            RemoteInputFileStream rifs = get(guidObject);
+            rifs.connect();
 
-            while((i = is.read()) != -1)
+            while((i = rifs.read()) != -1)
             {
                 jsonString += Character.toString((char)i);
+                System.out.println("We are here!");
             }
+            System.out.println("We are here now!");
         }
         catch(Exception e)
         {
             e.printStackTrace();
         }
 
+        //Error, probably a formatting error
         obj = new JsonParser().parse(jsonString).getAsJsonObject();
 
         for (JsonElement jElem : obj.getAsJsonArray())
