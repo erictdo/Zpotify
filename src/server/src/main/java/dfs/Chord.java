@@ -206,10 +206,10 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         try
         {
             InputStream is = get(guidObject);
-            obj = new JsonParser().parse(jsonString).getAsJsonObject();
+
             while((i = is.read()) != -1)
             {
-                jsonString += (char)i;
+                jsonString += Character.toString((char)i);
             }
         }
         catch(Exception e)
@@ -217,20 +217,24 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             e.printStackTrace();
         }
 
-        //obj.get("song").getAsJsonObject().get("title").getAsString()
-        /*
-        Unsure about how to implement the rest but I was planning on converting the JsonObject into a JsonArray that
-         splits the page. Then, in a for loop, I would go through each JsonArray and check the value of specific
-         properties such as "song" and "title" and sees if the value contains the query. If so, it would parse the
-         current JsonArray into a String and appends it to the String result.
-         */
-        JsonArray jArray = obj.getAsJsonArray();
+        obj = new JsonParser().parse(jsonString).getAsJsonObject();
 
-        JsonElement jElement = new JsonParser().parse(obj.get("song").getAsString());
-        JsonObject a = jElement.getAsJsonObject();
-        String b = a.get("title").getAsString();
+        for (JsonElement jElem : obj.getAsJsonArray())
+        {
+            JsonObject jo = jElem.getAsJsonObject();
+            if(jo.get("song").getAsJsonObject().get("title").getAsString().contains(query) ||
+                    jo.get("song").getAsJsonObject().get("year").getAsString().contains(query) ||
+                    jo.get("artist").getAsJsonObject().get("name").getAsString().contains(query))
+            {
+                result += jElem.getAsString();
+            }
+        }
 
-        return null;
+        if (result != null)
+        {
+            return result;
+        }
+        else return null;
     }
 
     /**
