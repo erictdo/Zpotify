@@ -208,6 +208,16 @@ public class DFS
     int port;
     Chord  chord;
 
+    public int getPort()
+    {
+        return port;
+    }
+
+    public Chord getChord()
+    {
+        return chord;
+    }
+
 
     private long md5(String objectName)
     {
