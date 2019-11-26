@@ -545,9 +545,10 @@ public class DFS
         }
     }
 
-    public void search(long pageGuid, String song) throws Exception{
+    public String search(long pageGuid, String song) throws Exception{
         String result = chord.search(pageGuid, song);
         System.out.println(result);
+        return result;
     }
 
     /**

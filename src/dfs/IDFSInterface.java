@@ -1,7 +1,4 @@
-//package main.java.dfs;
-
 import java.util.List;
-
 
 public interface IDFSInterface {
     void initIndex();
@@ -28,25 +25,25 @@ public interface IDFSInterface {
 
     RemoteInputFileStream read(String fileName, int pageNumber) throws Exception;
 
-    //    /**
-    //     * Retrieves a byte array representation of the queried page.
-    //     * @param filename Name of the file in the Metadata list.
-    //     * @param pageNumber The page to retrieve.
-    //     * @param unused_variable Unused.
-    //     * @return The page as a byte array.
-    //     * @throws Exception
-    //     */
+    // /**
+    // * Retrieves a byte array representation of the queried page.
+    // * @param filename Name of the file in the Metadata list.
+    // * @param pageNumber The page to retrieve.
+    // * @param unused_variable Unused.
+    // * @return The page as a byte array.
+    // * @throws Exception
+    // */
     byte[] read(String filename, int pageNumber, int unused_variable) throws Exception;
 
-    //    /**
-//     * Retrieves a byte array representation of the queried page.
-//     * @param filename Name of the file in the Metadata list.
-//     * @param pageNumber The page to retrieve.
-//     * @param offset The fragment number.
-//     * @param len The max length to be read in the buf
-//     * @return The page as a byte array.
-//     * @throws Exception
-//     */
+    // /**
+    // * Retrieves a byte array representation of the queried page.
+    // * @param filename Name of the file in the Metadata list.
+    // * @param pageNumber The page to retrieve.
+    // * @param offset The fragment number.
+    // * @param len The max length to be read in the buf
+    // * @return The page as a byte array.
+    // * @throws Exception
+    // */
     byte[] read(String filename, int pageNumber, int offset, int len) throws Exception;
 
     RemoteInputFileStream head(String fileName) throws Exception;

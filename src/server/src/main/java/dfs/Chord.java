@@ -221,20 +221,25 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
         //Error, probably a formatting error
         var jsonThing = new JsonParser().parse(jsonString.toString()).getAsJsonArray();
-
+        result.append("[");
         for (JsonElement jElem : jsonThing)
         {
             JsonObject jo = jElem.getAsJsonObject();
-            String jSongTitle = jo.get("song").getAsJsonObject().get("title").getAsString();
-            String jSongYear = jo.get("song").getAsJsonObject().get("year").getAsString();
-            String jArtistName = jo.get("artist").getAsJsonObject().get("name").getAsString();
-            if(jSongTitle.contains(query) ||
-                    jSongYear.contains(query) ||
-                    jArtistName.contains(query))
+            String jSongTitle = jo.get("song").getAsJsonObject().get("title").getAsString().toLowerCase();
+            String jSongYear = jo.get("song").getAsJsonObject().get("year").getAsString().toLowerCase();
+            String jArtistName = jo.get("artist").getAsJsonObject().get("name").getAsString().toLowerCase();
+            if(jSongTitle.contains(query.toLowerCase()) ||
+                    jSongYear.contains(query.toLowerCase()) ||
+                    jArtistName.contains(query.toLowerCase()))
             {
-                result.append(jo.toString());
+                result.append(jo.toString() + ",");
             }
         }
+        if (result.charAt(result.length() - 1) == ',')
+        {
+            result.deleteCharAt(result.length() - 1);
+        }
+        result.append("]");
 
         if (result != null)
         {

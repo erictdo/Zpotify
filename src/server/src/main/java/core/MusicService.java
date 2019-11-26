@@ -34,8 +34,8 @@ public class MusicService extends Dispatcher {
         musicList = deserializer.deserializeSongsFromJson();
         try {
             if (dfs==null){
-                dfs = new DFS(3000);
-                dfs.join("127.0.0.1", 2000);
+                dfs = new DFS(2000);
+                dfs.join("127.0.0.1", 0);
                 dfs.lists();
                 dfs.create("music");
                 Gson gson = new GsonBuilder().setPrettyPrinting().create();

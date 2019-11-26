@@ -49,6 +49,7 @@ public class SearchThread implements Runnable {
 		try {
 			ChordMessageInterface peer = dfs.getChord().locateSuccessor(pageGuid);
 			String searchResultString = peer.search(pageGuid,search);
+			System.out.println("SEARCH TEST: " + searchResultString);
 			music = gson.fromJson(searchResultString, type);
 		} catch (RemoteException e) {
 			e.printStackTrace();

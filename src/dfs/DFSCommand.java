@@ -1,5 +1,3 @@
-//package main.java.dfs;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +6,11 @@ import java.util.Scanner;
 import com.google.gson.*;
 import com.google.gson.stream.*;
 
-public class DFSCommand {
+
+
+
+public class DFSCommand
+{
     DFS dfs;
 
     public DFSCommand() throws Exception {
@@ -19,10 +21,11 @@ public class DFSCommand {
         int portToJoin = in.nextInt();
 
         dfs = new DFS(p);
-
-        if (portToJoin > 0) {
-            System.out.println("Joining " + portToJoin);
-            dfs.join("127.0.0.1", portToJoin);
+        
+        if (portToJoin > 0)
+        {
+            System.out.println("Joining "+ portToJoin);
+            dfs.join("127.0.0.1", portToJoin);            
         }
 
         dfsMenu();
@@ -41,35 +44,53 @@ public class DFSCommand {
                 } else {
                     System.out.println("Must provide port to join");
                 }
-            } else if (result[0].equals("print")) {
+            }
+            else if (result[0].equals("print")) {
                 dfs.print();
-            } else if (result[0].equals("ls")) {
+            }
+            else if (result[0].equals("ls")) {
                 dfs.lists();
-            } else if (result[0].equals("touch") && result.length == 2) {
+            }
+            else if (result[0].equals("touch") && result.length == 2) {
                 dfs.create(result[1]);
-            } else if (result[0].equals("delete")) {
-                if (result.length == 2) {
+            }
+            else if (result[0].equals("delete"))
+            {
+                if (result.length == 2)
+                {
                     dfs.delete(result[1]);
-                } else {
+                }
+                else
+                {
                     System.out.println("Must provide a file name");
                 }
-            } else if (result[0].equals("read")) {
-                if (result.length == 3) {
-                    try {
+            }
+            else if (result[0].equals("read"))
+            {
+                if (result.length == 3)
+                {
+                    try
+                    {
                         dfs.read(result[1], Integer.parseInt(result[2]));
-                    } catch (NumberFormatException e) {
+                    }
+                    catch (NumberFormatException e)
+                    {
                         System.out.println("Error: 3rd argument must be a page number");
                     }
-                } else {
+                }
+                else
+                {
                     System.out.println("Must provide file name and page number");
                 }
-            } else if (result[0].equals("append")) {
+            }
+            else if (result[0].equals("append")) {
                 if (result.length == 3) {
                     if (result[1].contains("music")) {
 
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                        var chunks = getMusicJsonChunks(result[2], 100);
+                        var chunks =
+                                getMusicJsonChunks(result[2], 50);
 
                         System.out.println("Adding pages to music.json...");
                         int i = 0;
@@ -86,30 +107,42 @@ public class DFSCommand {
                         }
 
                         System.out.println("Done");
-                    } else {
-                        dfs.append(result[1], new RemoteInputFileStream(result[2])); // User must specify filename they
-                                                                                     // want to append data to and
-                                                                                     // filepath of the data to be
-                                                                                     // appended
                     }
-                } else {
+                    else {
+                        dfs.append(result[1], new RemoteInputFileStream(result[2]));    // User must specify filename they want to append data to and filepath of the data to be appended
+                    }
+                }
+                else
+                {
                     System.out.println("Must provide filename to append to and filepath of data to be appended");
                 }
-            } else if (result[0].equals("move")) // Rename
+            }
+            else if (result[0].equals("move")) //Rename
             {
-                if (result.length == 3) {
+                if (result.length == 3)
+                {
                     dfs.move(result[1], result[2]);
-                } else {
+                }
+                else
+                {
                     System.out.println("Must provide a file name and its new name");
                 }
-            } else if (result[0].equals("search")) // Search
+            }
+            else if (result[0].equals("search"))
             {
-                if (result.length == 3) {
-                    dfs.search(result[1], result[2]);
-                } else {
-                    System.out.println("Must provide a file name and its new name");
+                if (result.length == 3)
+                {
+                	// 1st parameter = pageGuide
+					// 2nd parameter = search text
+                    dfs.search(Long.parseLong(result[1]), result[2]);
                 }
-            } else if (result[0].equals("leave")) {
+                else
+                {
+                    System.out.println("Must provide a song name");
+                }
+            }
+            else if (result[0].equals("leave"))
+            {
                 dfs.leave();
             }
 
@@ -149,34 +182,34 @@ public class DFSCommand {
         System.out.println(" ls");
         System.out.println(" touch");
         System.out.println(" delete");
+        System.out.println(" search");
         System.out.println(" read");
         System.out.println(" append");
         System.out.println(" move");
-        System.out.println(" search");
         System.out.println(" quit (to quit DFS Command and start server)");
         System.out.print("Enter a command: ");
 
     }
-
-    static public void main(String args[]) throws Exception {
+    
+    static public void main(String args[]) throws Exception
+    {
         Gson gson = new Gson();
-        // RemoteInputFileStream in = new RemoteInputFileStream("music.json", false);
-        // in.connect();
-        // Reader targetReader = new InputStreamReader(in);
-        // JsonReader jreader = new JsonReader(targetReader);
-        // Music[] music = gson.fromJson(jreader, Music[].class);
-        //
-        // if (args.length < 1 ) {
-        // throw new IllegalArgumentException("Parameter: <port> <portToJoin>");
-        // }
-        // if (args.length > 1 ) {
-        // DFSCommand dfsCommand = new DFSCommand(Integer.parseInt(args[0]),
-        // Integer.parseInt(args[1]));
-        // }
-        // else
-        // {
-        // DFSCommand dfsCommand = new DFSCommand( Integer.parseInt(args[0]), 0);
-        // }
+//        RemoteInputFileStream in = new RemoteInputFileStream("music.json", false);
+//        in.connect();
+//        Reader targetReader = new InputStreamReader(in);
+//        JsonReader jreader = new  JsonReader(targetReader);
+//        Music[] music = gson.fromJson(jreader, Music[].class);
+//
+//        if (args.length < 1 ) {
+//            throw new IllegalArgumentException("Parameter: <port> <portToJoin>");
+//        }
+//        if (args.length > 1 ) {
+//            DFSCommand dfsCommand = new DFSCommand(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+//        }
+//        else
+//        {
+//            DFSCommand dfsCommand = new DFSCommand( Integer.parseInt(args[0]), 0);
+//        }
         try {
             new DFSCommand();
         } catch (Exception e) {
