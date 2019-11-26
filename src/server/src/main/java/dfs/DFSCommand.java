@@ -92,7 +92,7 @@ public class DFSCommand
                         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
                         var chunks =
-                                getMusicJsonChunks(result[2], 100);
+                                getMusicJsonChunks(result[2], 10);
 
                         System.out.println("Adding pages to music.json...");
                         int i = 0;
@@ -132,10 +132,11 @@ public class DFSCommand
             }
             else if (result[0].equals("search"))
             {
-                if (result.length == 4)
+                if (result.length == 3)
                 {
-                    long pageGuid = 0;
-                    dfs.search(pageGuid, "song");
+                	// 1st parameter = pageGuide
+					// 2nd parameter = search text
+                    dfs.search(Long.parseLong(result[1]), result[2]);
                 }
                 else
                 {

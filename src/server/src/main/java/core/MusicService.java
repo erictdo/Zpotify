@@ -3,6 +3,7 @@ package main.java.core;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import main.java.dfs.DFS;
+import main.java.dfs.DFSCommand;
 import main.java.model.Artist;
 import main.java.model.Music;
 import main.java.model.Release;
@@ -35,6 +36,27 @@ public class MusicService extends Dispatcher {
             if (dfs==null){
                 dfs = new DFS(3000);
                 dfs.join("127.0.0.1", 2000);
+                dfs.lists();
+                dfs.create("music");
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+                var chunks = DFSCommand.getMusicJsonChunks("music.json", 10);
+
+                System.out.println("Adding pages to music.json...");
+                int i = 0;
+                for (var chunk : chunks) {
+                    String jsonStr = null;
+                    try {
+                        jsonStr = gson.toJson(chunk);
+                        dfs.append("music", jsonStr);
+
+                        System.out.println(String.format("Creating page [%d/%d]", ++i, chunks.size()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                System.out.println("Done");
             }
         }
         catch (Exception e) {
@@ -110,6 +132,7 @@ public class MusicService extends Dispatcher {
         } else {
             list = musicList;
         }
+
         // Get music within a page
         int startIndex = ((pageNum - 1) * pageSize) + 1;
         int endIndex;
@@ -132,20 +155,16 @@ public class MusicService extends Dispatcher {
     }
 
     public List<Music> search(String text) throws Exception {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new Gson();
 
-        List<Music> tracks = null;
         DFS.FileJson fileToSearch = null;
         ArrayList<SearchThread> searchThreads = new ArrayList<>();
-        String songs = "";
-
-        int j = 0;
+        ArrayList<Music> musicResult = new ArrayList<>();
 
         try {
             DFS.FilesJson files = dfs.readMetaData();
-            DFS.PagesJson dir = null;
             for (DFS.FileJson file : files.getFiles()) {
-                if (file.getName().equals("music.json")) {
+                if (file.getName().equals("music")) {
                     fileToSearch = file;
                 }
             }
@@ -153,23 +172,27 @@ public class MusicService extends Dispatcher {
             e.printStackTrace();
         }
 
+        //Search each page in each thread
+        ArrayList<Thread> threadList = new ArrayList<Thread>();
         for (int i = 0; i < fileToSearch.getPages().size(); i++) {
-            SearchThread t = new SearchThread(i, fileToSearch, dfs, text, j);
+            SearchThread t = new SearchThread(i, fileToSearch, dfs, text);
             Thread thread = new Thread(t);
             searchThreads.add(t);
-            thread.start();
+            threadList.add(thread);
+            threadList.get(i).start();
         }
 
+        // Wait for all threads to finish
+        for (int i = 0 ; i < threadList.size() ; i++) {
+            threadList.get(i).join();
+        }
+
+        //Combine search results from each thread
         for (int i = 0; i < searchThreads.size(); i++) {
-            songs += searchThreads.get(i).getResults();
+            musicResult.addAll(searchThreads.get(i).getResults());
         }
 
-        System.out.println(songs);
-
-        Type musicListType = new TypeToken<ArrayList<Music>>() {}.getType();
-        ArrayList<Music> musicListResult = gson.fromJson(songs, musicListType);
-
-        return musicListResult;
+        return musicResult;
     }
 
 
