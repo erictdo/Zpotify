@@ -1,6 +1,7 @@
 package com.example.a327lab1.controller;
 
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -77,7 +78,7 @@ public class MusicListFragment extends Fragment {
         rightBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (musicList.size() < pageNum) {
+                if (musicList.size() == pageSize) {
                     pageNum++;
                     musicList = getMusicPageList();
                     updateRecyclerView(view);
