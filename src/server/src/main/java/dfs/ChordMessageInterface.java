@@ -23,10 +23,7 @@ public interface ChordMessageInterface extends Remote
     public byte[] get(long guidObject, long offset, int len) throws IOException, RemoteException;  
     public void delete(long guidObject) throws IOException, RemoteException;
 
-    void onChordSize(Long source, int i) throws RemoteException;
-
-    void emit(String key, JsonElement value, IDFSInterface context, String file) throws Exception;
+//    void onChordSize(Long source, int i) throws RemoteException;
 
 
-    void addKeyValue(String key, String toString, String file, long guid) throws Exception;
 }

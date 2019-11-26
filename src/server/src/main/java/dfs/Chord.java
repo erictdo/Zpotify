@@ -9,6 +9,7 @@ package main.java.dfs; /**
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 
+
 import java.io.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -43,8 +44,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
     // path prefix
     String prefix;
 
-    //
-    HashMap<Long, TreeMap<String, ArrayList>> myPageMap = new HashMap<>();
 
 
 
@@ -561,133 +560,20 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         return prefix;
     }
 
-    /**
-     * @param source - GUID of the chord peer that initiates onChordSize
-     * @param n      - number of nodes counted, init 1
-     * @return n - the number of nodes in the chord
-     */
-    public void onChordSize(Long source, int n) throws RemoteException {
+//    /**
+//     * @param source - GUID of the chord peer that initiates onChordSize
+//     * @param n      - number of nodes counted, init 1
+//     * @return n - the number of nodes in the chord
+//     */
+//    public void onChordSize(Long source, int n) throws RemoteException {
+//
+//        if (source != this.guid) {
+//            this.successor.onChordSize(source, ++n);
+//        } else {
+//            this.chordSize = n;
+//        }
+//        // When source == this.guid then all nodes in the chord have been counted
+//
+//    }
 
-        if (source != this.guid) {
-            this.successor.onChordSize(source, ++n);
-        } else {
-            this.chordSize = n;
-        }
-        // When source == this.guid then all nodes in the chord have been counted
-
-    }
-
-    /**
-     * Store tree in the page in order
-     *
-     * @param page - Page receiving TreeMap Data
-     */
-    public void bulk(DFS.PagesJson page, String file) throws Exception {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-
-        try {
-            long pageGuid = page.getGUID();
-            if (myPageMap.get(pageGuid) != null) {
-                put(pageGuid, gson.toJson(myPageMap.get(pageGuid)));
-                myPageMap.remove(pageGuid);
-            }
-        } catch (Exception e) {
-            System.out.println("Error: Chord.bulk ");
-            e.printStackTrace();
-
-        }
-    }
-
-    @Override
-    public void emit(String key, JsonElement value, IDFSInterface context, String file) throws Exception {
-        key = key.toUpperCase();
-
-        DFS.FilesJson metadata = context.readMetaData();
-
-        DFS.FileJson fj = null;
-        for (int i = metadata.file.size() - 1; i >= 0; i--) {
-            fj = metadata.file.get(i);
-            if (fj.getName().equals(file)) {
-                break;
-            }
-        }
-        for (int i = 0; i < fj.getNumberOfPages() - 1; i++) {
-            DFS.PagesJson page1 = fj.pages.get(i);
-            DFS.PagesJson page2 = fj.pages.get(i + 1);
-
-            String indexString = new String(context.getIndex());
-
-            int keyLetter1;
-            int keyLetter2;
-
-            try {
-                keyLetter1 = indexString.indexOf(key.charAt(0));
-                keyLetter2 = indexString.indexOf(key.charAt(1));
-            } catch (StringIndexOutOfBoundsException e) {
-                break;
-            }
-
-
-            int pg1Letter1 = indexString.indexOf(page1.lowerBoundInterval.charAt(0));
-            int pg2Letter1 = indexString.indexOf(page2.lowerBoundInterval.charAt(0));
-            int pg1Letter2 = indexString.indexOf(page1.lowerBoundInterval.charAt(1));
-            int pg2Letter2 = indexString.indexOf(page2.lowerBoundInterval.charAt(1));
-
-            if ((keyLetter1 == pg1Letter1 && (keyLetter2 >= pg1Letter2 || key.charAt(1) == ' ')) ||
-                    (keyLetter1 == pg2Letter1 && keyLetter2 < pg2Letter2) ||
-                    (keyLetter1 > pg1Letter1 && keyLetter1 < pg2Letter1)) {
-                ChordMessageInterface peer = locateSuccessor(page1.getGUID());
-                peer.addKeyValue(key, value.toString(), file, page1.getGUID());
-                break;
-            } else if (i == fj.getNumberOfPages() - 2) {
-                ChordMessageInterface peer = locateSuccessor(page2.getGUID());
-                peer.addKeyValue(key, value.toString(), file, page2.getGUID());
-            }
-        }
-
-    }
-
-    /**
-     * Adds key, value pair to TreeMap data structure. If key exists, add value to it. If key not in TreeMap, make a new entry
-     *
-     * @param key   - Key value in string format
-     */
-    public void addKeyValue(String key, String valueString, String filename, long guid) throws Exception {
-        Gson gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-
-        JsonParser parser = new JsonParser();
-
-        JsonElement value = null;
-        if (filename.endsWith(".map"))
-            value = parser.parse(valueString).getAsJsonObject();
-        else
-            value = parser.parse(valueString).getAsJsonArray();
-
-        TreeMap<String, ArrayList> myMap = null;
-        try {
-            myMap = myPageMap.get(guid);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (myMap == null) {
-            myPageMap.put(guid, new TreeMap<>());
-            myMap = myPageMap.get(guid);
-        }
-
-        if (filename.endsWith(".map")) {
-            if (!myMap.containsKey(key)) {                            // If key is not in map, add an entry
-                ArrayList tmpList = new ArrayList();
-                myMap.put(key, tmpList);
-            }
-            myMap.get(key).add(value);                              // Add value to map
-        } else {
-            ArrayList values = gson.fromJson(value, ArrayList.class);
-            myMap.put(key, values);
-        }
-    }
 }
