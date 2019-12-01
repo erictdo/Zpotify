@@ -1,4 +1,7 @@
-package main.java.dfs; /**
+package main.java.dfs;
+
+import main.java.acp.Transaction;
+/**
 * Chord implements Chord P2P
 *
 * @author  Oscar Morales-Ponce
@@ -614,6 +617,19 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         return prefix;
     }
 
+    public Transaction.Vote canCommit(Transaction t){
+        return t.getVote();
+    }
+
+    public void doCommit(Transaction t)
+    {
+        if(!canCommit(t).equals(Transaction.Vote.YES))
+        {
+            //doAbort(t);
+        }
+
+
+    }
 //    /**
 //     * @param source - GUID of the chord peer that initiates onChordSize
 //     * @param n      - number of nodes counted, init 1
