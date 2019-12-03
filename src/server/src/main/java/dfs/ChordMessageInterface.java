@@ -25,12 +25,11 @@ public interface ChordMessageInterface extends Remote
     public void delete(long guidObject) throws IOException, RemoteException;
 
     public String search(long guidObject, String query) throws RemoteException;
-//    void onChordSize(Long source, int i) throws RemoteException;
 
-    public boolean canCommit(Transaction t, int guid) throws RemoteException, FileNotFoundException;
-    public void doCommit(Transaction t) throws RemoteException;
-    public void doAbort(Transaction t,int guid) throws RemoteException;
-    public void haveCommitted(Transaction t, Object p) throws RemoteException;
-    public boolean getDecision(Transaction t) throws RemoteException;
+//    public boolean canCommit(Transaction t, int guid) throws RemoteException, FileNotFoundException;
+//    public void doCommit(Transaction t) throws RemoteException;
+//    public void doAbort(Transaction t,int guid) throws RemoteException;
+//    public void haveCommitted(Transaction t, Object p) throws RemoteException;
+//    public boolean getDecision(Transaction t) throws RemoteException;
 
 }

@@ -7,6 +7,7 @@ import java.nio.file.*;
 import java.math.BigInteger;
 import java.security.*;
 import com.google.gson.Gson;
+import main.java.acp.Transaction;
 
 
 /* JSON Format
@@ -562,4 +563,22 @@ public class DFS
         }
         return null;
     }
+
+    public void replicateFile(String fileName, String text) throws Exception {
+        int numOfReplicas = 3;
+        for (int i = 0 ; i < numOfReplicas ; i++) {
+            append(fileName, text);
+        }
+    }
+
+//    private void push() {
+//        Transaction trans = new Transaction(transactionID, fileName, pageIndex, Transaction.Operation.WRITE);
+//        if (chord.canCommit(trans)) {
+//            chord.doCommit(trans);
+//        }
+//    }
+//
+//    private void pull() {
+//
+//    }
 }
