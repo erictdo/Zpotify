@@ -176,6 +176,10 @@ public class DFSCommand {
                 }
             } else if (result[0].equals("leave")) {
                 dfs.leave();
+            } else if (result[0].equals("push")) {
+
+            } else if (result[0].equals("pull")) {
+
             }
 
             dfsMenu();
@@ -219,6 +223,8 @@ public class DFSCommand {
         System.out.println(" append");
         System.out.println(" duplicate");
         System.out.println(" move");
+        System.out.println(" push");
+        System.out.println(" pull");
         System.out.println(" quit (to quit DFS Command and start server)");
         System.out.print("Enter a command: ");
 
