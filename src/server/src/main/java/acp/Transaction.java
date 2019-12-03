@@ -1,7 +1,7 @@
 package main.java.acp;
 
 public class Transaction {
-    public enum Operation {WRITE, DELETE};
+    public enum Operation {WRITE, DELETE, READ};
     public enum Vote {YES, NO};
     Long transactionID;
     Vote vote;

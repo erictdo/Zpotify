@@ -136,11 +136,10 @@ public class DFSCommand {
                             br.close();
                         }
                     } else {
-                        dfs.append(result[1], new RemoteInputFileStream(result[2])); // User must specify filename they want to append data to and filepath of the data to be appended
+                        System.out.println("Try something else");
                     }
                 }
-            } else if (result[0].equals("move")) //Rename
-            {
+            } else if (result[0].equals("move")) { //Rename
                 if (result.length == 3) {
                     dfs.move(result[1], result[2]);
                 } else {
@@ -153,6 +152,27 @@ public class DFSCommand {
                     dfs.search(Long.parseLong(result[1]), result[2]);
                 } else {
                     System.out.println("Must provide a song name");
+                }
+            } else if (result[0].equals("push")) {
+                if (result.length == 3) {
+                    try {
+                        dfs.push(result[1], Long.parseLong(result[2]));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: 3rd argument must be a page number");
+                    }
+                } else {
+                    System.out.println("Must provide file name and page number");
+                }
+            }
+            else if (result[0].equals("pull")) {
+                if (result.length == 3) {
+                    try {
+                        dfs.pull(result[1], Long.parseLong((result[2])));
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: 3rd argument must be a page number");
+                    }
+                } else {
+                    System.out.println("Must provide file name and page number");
                 }
             } else if (result[0].equals("leave")) {
                 dfs.leave();

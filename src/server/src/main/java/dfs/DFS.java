@@ -571,14 +571,23 @@ public class DFS
         }
     }
 
-//    private void push() {
-//        Transaction trans = new Transaction(transactionID, fileName, pageIndex, Transaction.Operation.WRITE);
-//        if (chord.canCommit(trans)) {
-//            chord.doCommit(trans);
-//        }
-//    }
-//
-//    private void pull() {
-//
-//    }
+    public void push(String fileName, Long pageNumber) {
+        try {
+            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.WRITE);
+            chord.doCommit(trans);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void pull(String fileName, Long pageNumber) {
+        try {
+            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.READ);
+            if (chord.canCommit(trans) == Transaction.Vote.YES)  {
+                read(fileName, Integer.parseInt(pageNumber.toString()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
