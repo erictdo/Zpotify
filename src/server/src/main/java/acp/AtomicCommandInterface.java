@@ -9,6 +9,6 @@ public interface AtomicCommandInterface {
     public boolean canCommit(Transaction t, int guid) throws RemoteException, FileNotFoundException;
     public void doCommit(Transaction t) throws RemoteException;
     public void doAbort(Transaction t,int guid) throws RemoteException;
-    public void haveCommitted(Transaction t) throws RemoteException;
-    public boolean getDecision(Transaction t, Chord p) throws RemoteException;
+    public void haveCommitted(Transaction t, Object p) throws RemoteException;
+    public boolean getDecision(Transaction t) throws RemoteException;
 }
