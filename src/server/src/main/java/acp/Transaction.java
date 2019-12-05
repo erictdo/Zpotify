@@ -7,9 +7,9 @@ public class Transaction {
     Vote vote;
     Operation operation;
     String fileName;
-    Long pageIndex;
+    int pageIndex;
 
-    public Transaction(Long transactionID, String fileName, Long pageIndex, Operation o)
+    public Transaction(Long transactionID, String fileName, int pageIndex, Operation o)
     {
        this.transactionID = transactionID;
        this.fileName = fileName;
@@ -27,7 +27,7 @@ public class Transaction {
         return fileName;
     }
 
-    public Long getPageIndex()
+    public int getPageIndex()
     {
         return pageIndex;
     }
