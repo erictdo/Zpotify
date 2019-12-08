@@ -2,9 +2,9 @@ package main.java.acp;
 
 public class Transaction {
     public enum Operation {WRITE, DELETE, READ};
-    public enum Vote {YES, NO};
+    //public enum Vote {YES, NO};
     Long transactionID;
-    Vote vote;
+    //Vote vote;
     Operation operation;
     String fileName;
     int pageIndex;
@@ -32,16 +32,13 @@ public class Transaction {
         return pageIndex;
     }
 
-    public Vote getVote()
-    {
-        return vote;
-    }
+//    public Vote getVote()
+//    {
+//        return vote;
+//    }
 
     public Operation getOperation()
     {
         return operation;
     }
-
-    // Is this where it goes??
-    // public bool haveCommitted()
 }

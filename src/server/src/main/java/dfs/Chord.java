@@ -48,8 +48,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
     // path prefix
     String prefix;
 
-
-
+    Transaction currentTransaction = null;
 
 /**
  * Constructor of the Chord.
@@ -152,6 +151,24 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
           System.out.println(e);
       }
     }
+
+    /**
+     * overwrite a text in guidObject
+     * @param guidObject  GUID of the object to overwrite
+     * @param text text to write
+     */
+    public void overwrite(long guidObject, String text) throws RemoteException {
+        try {
+            String fileName = prefix + guidObject;
+            FileOutputStream output = new FileOutputStream(fileName, false);
+            output.write(text.getBytes());
+            output.close();
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
 /**
  * return guidObject
   * @param guidObject  GUID of the object to return
@@ -215,7 +232,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             {
                 jsonString.append(Character.toString((char)i));
             }
-            System.out.println("We are here now!");
         }
         catch(Exception e)
         {
@@ -610,26 +626,51 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             }
         }
         catch(RemoteException e){
-	       System.out.println("Cannot retrive id of successor or predecessor");
+	       System.out.println("Cannot retrieve id of successor or predecessor");
         }
     }
     public String getPrefix() {
         return prefix;
     }
 
-    public Transaction.Vote canCommit(Transaction t){
-        return t.getVote();
-    }
+    @Override
+    public boolean canCommit(Transaction t) throws RemoteException{
+        /*
+        Read from file that holds all previous transactions and compare
+        the latest recorded timestamp with the requested Transaction's timestamp
+         */
+        //File localFile = new File("git.json");
 
-    public void doCommit(Transaction t)
-    {
-        if(!canCommit(t).equals(Transaction.Vote.YES))
+        if(currentTransaction != null)
         {
-            //doAbort(t);
+            return true;
         }
-
-
+        else
+        {
+            return false;
+        }
     }
+
+    @Override
+    public void doCommit(Transaction t) throws RemoteException, IOException {
+        //delete(guid) then
+        File localFile = new File("text.txt");
+        FileReader fr = new FileReader(localFile);
+
+        StringBuilder s = new StringBuilder();
+        int i;
+        while ((i = fr.read()) != -1)
+            s.append((char) i);
+
+        overwrite(t.getTransactionID(), s.toString());
+    }
+
+    @Override
+    public boolean haveCommitted(Transaction t, Object participant) throws RemoteException
+    {
+        return true;
+    }
+}
 //    /**
 //     * @param source - GUID of the chord peer that initiates onChordSize
 //     * @param n      - number of nodes counted, init 1
@@ -645,5 +686,3 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 //        // When source == this.guid then all nodes in the chord have been counted
 //
 //    }
-
-}

@@ -574,7 +574,7 @@ public class DFS
     public void push(String fileName, int pageNumber) {
         try {
             Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.WRITE);
-            if (chord.canCommit(trans) == Transaction.Vote.YES)  {
+            if (chord.canCommit(trans))  {
                 chord.doCommit(trans);
             }
         } catch (Exception e) {
@@ -585,7 +585,7 @@ public class DFS
     public void pull(String fileName, int pageNumber) {
         try {
             Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.READ);
-//            if (chord.haveCommitted(trans) == Transaction.Vote.YES)  {
+//            if (chord.haveCommitted(trans))  {
 //                read(fileName, pageNumber);
 //            }
         } catch (Exception e) {

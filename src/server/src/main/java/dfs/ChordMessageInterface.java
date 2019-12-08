@@ -26,8 +26,8 @@ public interface ChordMessageInterface extends Remote
 
     public String search(long guidObject, String query) throws RemoteException;
 
-//    public boolean canCommit(Transaction t, int guid) throws RemoteException, FileNotFoundException;
-//    public void doCommit(Transaction t) throws RemoteException;
-//    public boolean haveCommitted(Transaction t, Object p) throws RemoteException;
+    public boolean canCommit(Transaction t) throws RemoteException;
+    public void doCommit(Transaction t) throws RemoteException, IOException;
+    public boolean haveCommitted(Transaction t, Object p) throws RemoteException;
 
 }

@@ -156,7 +156,7 @@ public class DFSCommand {
             } else if (result[0].equals("push")) {
                 if (result.length == 3) {
                     try {
-                        dfs.push(result[1], Long.parseLong(result[2]));
+                        dfs.push(result[1], Integer.parseInt(result[2].toString()));
                     } catch (NumberFormatException e) {
                         System.out.println("Error: 3rd argument must be a page number");
                     }
@@ -167,7 +167,7 @@ public class DFSCommand {
             else if (result[0].equals("pull")) {
                 if (result.length == 3) {
                     try {
-                        dfs.pull(result[1], Long.parseLong((result[2])));
+                        dfs.pull(result[1], Integer.parseInt(result[2].toString()));
                     } catch (NumberFormatException e) {
                         System.out.println("Error: 3rd argument must be a page number");
                     }
