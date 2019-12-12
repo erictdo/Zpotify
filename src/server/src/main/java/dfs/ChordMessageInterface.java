@@ -28,6 +28,5 @@ public interface ChordMessageInterface extends Remote
 
     public boolean canCommit(Transaction t) throws RemoteException;
     public void doCommit(Transaction t) throws RemoteException, IOException;
-    public boolean haveCommitted(Transaction t, Object p) throws RemoteException;
 
 }

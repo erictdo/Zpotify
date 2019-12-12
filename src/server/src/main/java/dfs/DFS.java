@@ -2,6 +2,7 @@ package main.java.dfs;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.nio.file.*;
 import java.math.BigInteger;
@@ -573,23 +574,31 @@ public class DFS
 
     public void push(String fileName, int pageNumber) {
         try {
-            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.WRITE);
+            long timestamp = new Date().getTime();
+
+            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.WRITE, timestamp);
+
             if (chord.canCommit(trans))  {
                 chord.doCommit(trans);
             }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 
     public void pull(String fileName, int pageNumber) {
         try {
-            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.READ);
-//            if (chord.haveCommitted(trans))  {
-//                read(fileName, pageNumber);
-//            }
+            long timestamp = new Date().getTime();
+
+            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.READ, timestamp);
+
+            if (chord.canCommit(trans))  {
+                read(fileName, pageNumber);
+            }
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 }

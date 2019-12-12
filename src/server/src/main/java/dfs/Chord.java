@@ -50,6 +50,8 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
     Transaction currentTransaction = null;
 
+    long lastWrite;
+
 /**
  * Constructor of the Chord.
  * <p>
@@ -73,6 +75,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         predecessor = null;
         successor = this;
         Timer timer = new Timer();
+
         // It sets the timer to self stabilize the chord when nodes leave or join
         timer.scheduleAtFixedRate(new TimerTask() {
 	    @Override
@@ -93,8 +96,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 	       throw e;
         }
     }
-
-
 
 /**
  * return true if the key is in the open interval (key1, key2)
@@ -633,27 +634,31 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         return prefix;
     }
 
-    @Override
-    public boolean canCommit(Transaction t) throws RemoteException{
-        /*
-        Read from file that holds all previous transactions and compare
-        the latest recorded timestamp with the requested Transaction's timestamp
-         */
-        //File localFile = new File("git.json");
+    public void addTimestamp(long timestamp) {
+        try {
+            PrintWriter outputWriter = new PrintWriter(new FileWriter(new File("timestamp.txt")));
+            outputWriter.print(timestamp);
+            outputWriter.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+    }
 
-        if(currentTransaction != null)
+    @Override
+    public boolean canCommit(Transaction t) throws RemoteException {
+        if (t.getTimestamp() > lastWrite)
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 
     @Override
     public void doCommit(Transaction t) throws RemoteException, IOException {
         //delete(guid) then
+        lastWrite = t.getTimestamp();
+
         File localFile = new File("text.txt");
         FileReader fr = new FileReader(localFile);
 
@@ -663,12 +668,6 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
             s.append((char) i);
 
         overwrite(t.getTransactionID(), s.toString());
-    }
-
-    @Override
-    public boolean haveCommitted(Transaction t, Object participant) throws RemoteException
-    {
-        return true;
     }
 }
 //    /**
