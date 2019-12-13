@@ -174,7 +174,9 @@ public class DFSCommand {
             else if (result[0].equals("pull")) {
                 if (result.length == 3) {
                     try {
-                        file = dfs.pull(result[1], Integer.parseInt(result[2].toString()));
+                        String s = dfs.pull(result[1], Integer.parseInt(result[2].toString()));
+                        FileWriter fw = new FileWriter(file);
+                        fw.write(s);
                     } catch (NumberFormatException e) {
                         System.out.println("Error: 3rd argument must be a page number");
                     }

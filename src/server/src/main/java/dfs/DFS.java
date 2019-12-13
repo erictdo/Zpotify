@@ -580,13 +580,11 @@ public class DFS
         PagesJson foundPage;
         // Find file
         boolean find = false;
-        int newPageIndex = 0;
         int fileIndex = 0;
         Long pageGUID = Long.valueOf(0);
         for (int i = 0; i < metadata.file.size(); i++) {
             if (metadata.file.get(i).getName().equals(fileName)) {
-                fileIndex = i;
-                metadata.file.get(i).incrementRef();                                            // Increment file refCount
+                fileIndex = i;                                            // Increment file refCount
                 writeMetaData(metadata);                                                        // Write updated metadata
                 foundFile = metadata.file.get(i);
                 find = true;
@@ -599,7 +597,7 @@ public class DFS
         try {
 //            long timestamp = new Date().getTime();
 
-            Transaction trans = new Transaction(foundPage.getGUID(), fileName, Transaction.Operation.WRITE, foundPage.writeTS);
+            Transaction trans = new Transaction(foundPage.getGUID(), "test.txt", Transaction.Operation.WRITE, foundPage.writeTS);
 
             if (chord.canCommit(trans))  {
                 Long newWriteTS = new Date().getTime();
@@ -617,7 +615,7 @@ public class DFS
         }
     }
 
-    public File pull(String fileName, int pageNumber) throws Exception {
+    public String pull(String fileName, int pageNumber) throws Exception {
 
         // Read Metadata
         FilesJson metadata = readMetaData();
@@ -630,8 +628,7 @@ public class DFS
         Long pageGUID = Long.valueOf(0);
         for (int i = 0; i < metadata.file.size(); i++) {
             if (metadata.file.get(i).getName().equals(fileName)) {
-                fileIndex = i;
-                metadata.file.get(i).incrementRef();                                            // Increment file refCount
+                fileIndex = i;                                            // Increment file refCount
                 writeMetaData(metadata);                                                        // Write updated metadata
                 foundFile = metadata.file.get(i);
                 find = true;
@@ -662,6 +659,15 @@ public class DFS
             System.out.println(e.getMessage());
         }
 
-        return null;
+        StringBuilder s = new StringBuilder();
+        int i = 0;
+        if((i = rifs.read()) != 0)
+        {
+            s.append((char) i);
+        }
+
+        return s.toString();
     }
+
+
 }
