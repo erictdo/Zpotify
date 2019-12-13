@@ -545,7 +545,8 @@ public class DFS {
                                                                                                              // file and
                                                                                                              // update
                                                                                                              // filesize
-                metadata.file.get(i).writeTS = date.getTime(); // Update file write timestamp
+                Long tempTime = date.getTime();
+                metadata.file.get(i).writeTS = tempTime; // Update file write timestamp
                 find = true;
                 break;
             }
@@ -622,7 +623,7 @@ public class DFS {
         }
     }
 
-    public void push(String fileName, int pageNumber) throws Exception {
+    public void push(String metaFileName, String fileName, int pageNumber) throws Exception {
 
         // Read Metadata
         FilesJson metadata = readMetaData();
@@ -633,7 +634,7 @@ public class DFS {
         int fileIndex = 0;
         Long pageGUID = Long.valueOf(0);
         for (int i = 0; i < metadata.file.size(); i++) {
-            if (metadata.file.get(i).getName().equals(fileName)) {
+            if (metadata.file.get(i).getName().equals(metaFileName)) {
                 fileIndex = i; // Increment file refCount
                 writeMetaData(metadata); // Write updated metadata
                 foundFile = metadata.file.get(i);
@@ -647,17 +648,20 @@ public class DFS {
         try {
             // long timestamp = new Date().getTime();
 
-            Transaction trans = new Transaction(foundPage.getGUID(), "test.txt", Transaction.Operation.WRITE,
+            Transaction trans = new Transaction(foundPage.getGUID(), fileName, Transaction.Operation.WRITE,
                     foundPage.writeTS);
 
             if (chord.canCommit(trans)) {
                 Long newWriteTS = new Date().getTime();
+                Chord.lastWrite = newWriteTS;
                 trans.setTimestamp(newWriteTS);
                 chord.doCommit(trans);
                 foundPage.writeTS = newWriteTS;
                 foundFile.writeTS = newWriteTS;
                 foundFile.pages.set(pageNumber, foundPage);
                 metadata.file.set(fileIndex, foundFile);
+            } else {
+                System.out.println("Remote contains updated changes. Please pull first. Aborted");
             }
             writeMetaData(metadata);
         } catch (Exception e) {
@@ -691,10 +695,11 @@ public class DFS {
 
         RemoteInputFileStream rifs = null;
 
-        try {
-            long timestamp = new Date().getTime();
+        long timestamp = new Date().getTime();
 
-            Long newWriteTS = new Date().getTime();
+        try {
+            Chord.lastRead = timestamp;
+            Long newWriteTS = timestamp;
             foundPage.readTS = newWriteTS;
             foundFile.readTS = newWriteTS;
             foundFile.pages.set(pageNumber, foundPage);

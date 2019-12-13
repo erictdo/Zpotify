@@ -47,6 +47,8 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface 
 
     Transaction currentTransaction = null;
 
+    static long lastRead = 0;
+
     static long lastWrite = 0;
 
     /**
@@ -596,17 +598,23 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface 
 
     @Override
     public boolean canCommit(Transaction t) throws RemoteException {
-        if (t.getTimestamp() > lastWrite) {
+        System.out.println("Last Write Timestamp: " + t.getTimestamp());
+        System.out.println("Last Read Timestamp: " + lastRead);
+
+        if (t.getTimestamp() == lastWrite) { // If latest push is made this terminal (not from other terminals/peers)
+            return true;
+        } else if (t.getTimestamp() < lastRead) { // If this terminal pulled before other terminals/peers pushed.
             return true;
         }
 
+        // This terminal needs to pull before it can push. Abort
         return false;
     }
 
     @Override
     public void doCommit(Transaction t) throws RemoteException, IOException {
         // delete(guid) then
-        lastWrite = t.getTimestamp();
+        // lastWrite = t.getTimestamp();
 
         File file = new File(t.getFileName());
         FileReader fr = new FileReader(file);

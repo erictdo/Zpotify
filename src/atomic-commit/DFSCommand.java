@@ -3,8 +3,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import com.google.gson.*;
-import com.google.gson.stream.*;
+// import com.google.gson.*;
+// import com.google.gson.stream.*;
 
 public class DFSCommand {
     // public static int localFileID = 1;
@@ -22,7 +22,9 @@ public class DFSCommand {
         dfs = new DFS(p);
 
         // Each terminal (DFSCommand) will have their own local file
-        file = new File("test.txt");
+        System.out.println("Specify local file: ");
+        String userFilename = in.next();
+        file = new File(userFilename);
         // localFileID++;
 
         if (portToJoin > 0) {
@@ -71,25 +73,26 @@ public class DFSCommand {
             } else if (result[0].equals("append")) {
                 if (result.length == 3) {
                     if (result[1].contains("music")) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        // Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                        var chunks = getMusicJsonChunks(result[2], 50);
+                        // var chunks = getMusicJsonChunks(result[2], 50);
 
-                        System.out.println("Adding pages to music.json...");
-                        int i = 0;
-                        for (var chunk : chunks) {
-                            String jsonStr = null;
-                            try {
-                                jsonStr = gson.toJson(chunk);
-                                dfs.append(result[1], jsonStr);
+                        // System.out.println("Adding pages to music.json...");
+                        // int i = 0;
+                        // for (var chunk : chunks) {
+                        // String jsonStr = null;
+                        // try {
+                        // jsonStr = gson.toJson(chunk);
+                        // dfs.append(result[1], jsonStr);
 
-                                System.out.println(String.format("Creating page [%d/%d]", ++i, chunks.size()));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        // System.out.println(String.format("Creating page [%d/%d]", ++i,
+                        // chunks.size()));
+                        // } catch (Exception e) {
+                        // e.printStackTrace();
+                        // }
+                        // }
 
-                        System.out.println("Done");
+                        // System.out.println("Done");
                     } else {
                         dfs.append(result[1], new RemoteInputFileStream(result[2])); // User must specify filename they
                                                                                      // want to append data to and
@@ -103,43 +106,44 @@ public class DFSCommand {
                 if (result.length == 3) {
                     if (result[1].contains("music")) {
 
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        // Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                        var chunks = getMusicJsonChunks(result[2], 50);
+                        // var chunks = getMusicJsonChunks(result[2], 50);
 
-                        System.out.println("Adding pages to music.json...");
-                        int i = 0;
-                        for (var chunk : chunks) {
-                            String jsonStr = null;
-                            try {
-                                jsonStr = gson.toJson(chunk);
-                                dfs.replicateFile(result[1], jsonStr);
+                        // System.out.println("Adding pages to music.json...");
+                        // int i = 0;
+                        // for (var chunk : chunks) {
+                        // String jsonStr = null;
+                        // try {
+                        // jsonStr = gson.toJson(chunk);
+                        // dfs.replicateFile(result[1], jsonStr);
 
-                                System.out.println(String.format("Creating page [%d/%d]", ++i, chunks.size()));
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        // System.out.println(String.format("Creating page [%d/%d]", ++i,
+                        // chunks.size()));
+                        // } catch (Exception e) {
+                        // e.printStackTrace();
+                        // }
+                        // }
 
-                        System.out.println("Done");
+                        // System.out.println("Done");
                     } else if (result[1].contains("test")) {
-                        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                        // Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-                        BufferedReader br = new BufferedReader(new FileReader(new File(result[2])));
-                        try {
-                            StringBuilder sb = new StringBuilder();
-                            String fileLine = br.readLine();
+                        // BufferedReader br = new BufferedReader(new FileReader(new File(result[2])));
+                        // try {
+                        // StringBuilder sb = new StringBuilder();
+                        // String fileLine = br.readLine();
 
-                            while (fileLine != null) {
-                                sb.append(fileLine);
-                                sb.append("\n");
-                                fileLine = br.readLine();
-                            }
-                            System.out.println("Creating 3 replicas...");
-                            dfs.replicateFile(result[1], sb.toString());
-                        } finally {
-                            br.close();
-                        }
+                        // while (fileLine != null) {
+                        // sb.append(fileLine);
+                        // sb.append("\n");
+                        // fileLine = br.readLine();
+                        // }
+                        // System.out.println("Creating 3 replicas...");
+                        // dfs.replicateFile(result[1], sb.toString());
+                        // } finally {
+                        // br.close();
+                        // }
                     } else {
                         System.out.println("Try something else");
                     }
@@ -159,14 +163,14 @@ public class DFSCommand {
                     System.out.println("Must provide a song name");
                 }
             } else if (result[0].equals("push")) {
-                if (result.length == 3) {
+                if (result.length == 4) {
                     try {
-                        dfs.push(result[1], Integer.parseInt(result[2].toString()));
+                        dfs.push(result[1], result[2], Integer.parseInt(result[3].toString()));
                     } catch (NumberFormatException e) {
                         System.out.println("Error: 3rd argument must be a page number");
                     }
                 } else {
-                    System.out.println("Must provide file name and page number");
+                    System.out.println("Invalid number of arguments");
                 }
             } else if (result[0].equals("pull")) {
                 if (result.length == 3) {
@@ -202,31 +206,34 @@ public class DFSCommand {
         fw.close();
     }
 
-    public static List<JsonArray> getMusicJsonChunks(String filename, int numChunks) throws IOException {
-        if (numChunks <= 0) {
-            throw new NumberFormatException("Number of chunks must at least be 1.");
-        }
+    // public static List<JsonArray> getMusicJsonChunks(String filename, int
+    // numChunks) throws IOException {
+    // if (numChunks <= 0) {
+    // throw new NumberFormatException("Number of chunks must at least be 1.");
+    // }
 
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        JsonArray songArray = gson.fromJson(new FileReader(filename), JsonArray.class);
+    // Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    // JsonArray songArray = gson.fromJson(new FileReader(filename),
+    // JsonArray.class);
 
-        ArrayList<JsonArray> songArrayChunks = new ArrayList<>(); // holds all the "tenths" of the music json
-        JsonArray temp = null; // a "tenth" of the array
+    // ArrayList<JsonArray> songArrayChunks = new ArrayList<>(); // holds all the
+    // "tenths" of the music json
+    // JsonArray temp = null; // a "tenth" of the array
 
-        // Split music.json
-        for (int i = 0; i < songArray.size(); i++) {
-            if (i % (int) (songArray.size() / numChunks) == 0) {
-                temp = new JsonArray();
-                songArrayChunks.add(temp);
-            }
+    // // Split music.json
+    // for (int i = 0; i < songArray.size(); i++) {
+    // if (i % (int) (songArray.size() / numChunks) == 0) {
+    // temp = new JsonArray();
+    // songArrayChunks.add(temp);
+    // }
 
-            if (temp != null) {
-                temp.add(songArray.get(i));
-            }
-        }
+    // if (temp != null) {
+    // temp.add(songArray.get(i));
+    // }
+    // }
 
-        return songArrayChunks;
-    }
+    // return songArrayChunks;
+    // }
 
     private void dfsMenu() {
         System.out.println("DFS Command Menu");
@@ -246,7 +253,7 @@ public class DFSCommand {
     }
 
     static public void main(String args[]) throws Exception {
-        Gson gson = new Gson();
+        // Gson gson = new Gson();
         // RemoteInputFileStream in = new RemoteInputFileStream("music.json", false);
         // in.connect();
         // Reader targetReader = new InputStreamReader(in);

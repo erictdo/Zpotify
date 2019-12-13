@@ -622,7 +622,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
                         System.out.println("Finger "+ i + " " + finger[i].getId());
                 } catch(NullPointerException e)
                 {
-                    System.out.println("Cannot retrive id of the finger " + i);
+                    System.out.println("Cannot retrieve id of the finger " + i);
                 }
             }
         }
@@ -647,6 +647,8 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
     @Override
     public boolean canCommit(Transaction t) throws RemoteException {
+        System.out.println("Current timestamp: " + t.getTimestamp());
+        System.out.println("Last timestamp: " + lastWrite);
         if (t.getTimestamp() > lastWrite)
         {
             return true;
