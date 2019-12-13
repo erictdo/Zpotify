@@ -1,6 +1,8 @@
 package main.java.dfs;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -651,6 +653,7 @@ public class DFS
             writeMetaData(metadata);
             ChordMessageInterface peer = chord.locateSuccessor(foundPage.getGUID());
             rifs = peer.get(foundPage.guid);
+            rifs.connect();
             //Either return the RemoteFileInputStream itself
             //or convert it into a File and return that
 
@@ -660,9 +663,10 @@ public class DFS
         }
 
         StringBuilder s = new StringBuilder();
-        int i = 0;
-        if((i = rifs.read()) != 0)
+        int i;
+        while((i = rifs.read()) != -1)
         {
+            //System.out.print((char) i);
             s.append((char) i);
         }
 

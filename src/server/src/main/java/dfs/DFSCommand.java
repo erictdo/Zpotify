@@ -177,6 +177,7 @@ public class DFSCommand {
                         String s = dfs.pull(result[1], Integer.parseInt(result[2].toString()));
                         FileWriter fw = new FileWriter(file);
                         fw.write(s);
+                        fw.close();
                     } catch (NumberFormatException e) {
                         System.out.println("Error: 3rd argument must be a page number");
                     }
@@ -201,6 +202,7 @@ public class DFSCommand {
         s.append(buffer.readLine());
 
         fw.write(s.toString());
+        fw.close();
     }
 
     public static List < JsonArray > getMusicJsonChunks(String filename, int numChunks) throws IOException {
