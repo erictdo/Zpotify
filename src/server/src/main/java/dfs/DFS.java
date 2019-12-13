@@ -572,33 +572,68 @@ public class DFS
         }
     }
 
-    public void push(String fileName, int pageNumber) {
-        try {
-            long timestamp = new Date().getTime();
+    public void push(String fileName, int pageNumber) throws Exception {
 
-            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.WRITE, timestamp);
+        // Read Metadata
+        FilesJson metadata = readMetaData();
+        FileJson foundFile = null;
+        PagesJson foundPage;
+        // Find file
+        boolean find = false;
+        int newPageIndex = 0;
+        int fileIndex = 0;
+        Long pageGUID = Long.valueOf(0);
+        for (int i = 0; i < metadata.file.size(); i++) {
+            if (metadata.file.get(i).getName().equals(fileName)) {
+                fileIndex = i;
+                metadata.file.get(i).incrementRef();                                            // Increment file refCount
+                writeMetaData(metadata);                                                        // Write updated metadata
+                foundFile = metadata.file.get(i);
+                find = true;
+                break;
+            }
+        }
+
+        foundPage = foundFile.pages.get(pageNumber);
+
+        try {
+//            long timestamp = new Date().getTime();
+
+            Transaction trans = new Transaction(foundPage.getGUID(), fileName, Transaction.Operation.WRITE, foundPage.writeTS);
 
             if (chord.canCommit(trans))  {
+                Long newWriteTS = new Date().getTime();
+                trans.setTimestamp(newWriteTS);
                 chord.doCommit(trans);
+                foundPage.writeTS = newWriteTS;
+                foundFile.writeTS = newWriteTS;
+                foundFile.pages.set(pageNumber, foundPage);
+                metadata.file.set(fileIndex, foundFile);
             }
+            writeMetaData(metadata);
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
     }
 
-    public void pull(String fileName, int pageNumber) {
+    public File pull(String fileName, int pageNumber) {
+
+        RemoteInputFileStream rifs = null;
+
         try {
             long timestamp = new Date().getTime();
 
-            Transaction trans = new Transaction(chord.guid, fileName, pageNumber, Transaction.Operation.READ, timestamp);
+            Transaction trans = new Transaction(chord.guid, fileName, Transaction.Operation.READ, timestamp);
 
             if (chord.canCommit(trans))  {
-                read(fileName, pageNumber);
+                rifs = read(fileName, pageNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+
+        return null;
     }
 }

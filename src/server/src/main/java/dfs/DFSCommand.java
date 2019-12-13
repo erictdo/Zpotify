@@ -12,7 +12,10 @@ import com.google.gson.stream.*;
 
 
 public class DFSCommand {
+    //public static int localFileID = 1;
     DFS dfs;
+    File file;
+    BufferedReader buffer;
 
     public DFSCommand() throws Exception {
         Scanner in = new Scanner(System.in);
@@ -23,6 +26,10 @@ public class DFSCommand {
 
         dfs = new DFS(p);
 
+        //Each terminal (DFSCommand) will have their own local file
+        file = new File("test.txt");
+//        localFileID++;
+
         if (portToJoin > 0) {
             System.out.println("Joining " + portToJoin);
             dfs.join("127.0.0.1", portToJoin);
@@ -30,7 +37,7 @@ public class DFSCommand {
 
         dfsMenu();
 
-        BufferedReader buffer = new BufferedReader(new InputStreamReader(System.in));
+        buffer = new BufferedReader(new InputStreamReader(System.in));
         String line = buffer.readLine();
 
         // User interface:
@@ -174,17 +181,24 @@ public class DFSCommand {
                 } else {
                     System.out.println("Must provide file name and page number");
                 }
+            } else if (result[0].equals("edit")) {
+                editLocalFile();
             } else if (result[0].equals("leave")) {
                 dfs.leave();
-            } else if (result[0].equals("push")) {
-
-            } else if (result[0].equals("pull")) {
-
             }
 
             dfsMenu();
             line = buffer.readLine();
         }
+    }
+
+    public void editLocalFile() throws IOException{
+        StringBuilder s = new StringBuilder();
+        FileWriter fw = new FileWriter(file);
+
+        s.append(buffer.readLine());
+
+        fw.write(s.toString());
     }
 
     public static List < JsonArray > getMusicJsonChunks(String filename, int numChunks) throws IOException {

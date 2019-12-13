@@ -50,7 +50,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
 
     Transaction currentTransaction = null;
 
-    long lastWrite;
+    static long lastWrite = 0;
 
 /**
  * Constructor of the Chord.
@@ -651,6 +651,7 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         {
             return true;
         }
+
         return false;
     }
 
@@ -659,15 +660,15 @@ public class Chord extends UnicastRemoteObject implements ChordMessageInterface
         //delete(guid) then
         lastWrite = t.getTimestamp();
 
-        File localFile = new File("text.txt");
-        FileReader fr = new FileReader(localFile);
+        File file = new File(t.getFileName());
+        FileReader fr = new FileReader(file);
 
         StringBuilder s = new StringBuilder();
         int i;
         while ((i = fr.read()) != -1)
             s.append((char) i);
 
-        overwrite(t.getTransactionID(), s.toString());
+        overwrite(t.getPageGUID(), s.toString());
     }
 }
 //    /**

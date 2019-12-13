@@ -3,23 +3,28 @@ package main.java.acp;
 import java.sql.Timestamp;
 
 public class Transaction {
+    public static Long transactionNumber = 10000L;
     public enum Operation {WRITE, DELETE, READ};
     //public enum Vote {YES, NO};
     Long transactionID;
+    Long pageGUID;
     //Vote vote;
     Operation operation;
     String fileName;
-    int pageIndex;
+    //int pageIndex;
     Long timestamp;
 
-    public Transaction(Long transactionID, String fileName, int pageIndex, Operation o, Long timestamp)
+    public Transaction(Long pageGUID, String fileName, Operation o, Long timestamp)
     {
-       this.transactionID = transactionID;
+       this.transactionID = transactionNumber++;
+       this.pageGUID = pageGUID;
        this.fileName = fileName;
-       this.pageIndex = pageIndex;
+       //this.pageIndex = pageIndex;
        operation = o;
        this.timestamp = timestamp;
     }
+
+    public void setTimestamp(Long newTimestamp) { timestamp = newTimestamp; }
 
     public Long getTransactionID()
     {
@@ -31,10 +36,10 @@ public class Transaction {
         return fileName;
     }
 
-    public int getPageIndex()
-    {
-        return pageIndex;
-    }
+//    public int getPageIndex()
+//    {
+//        return pageIndex;
+//    }
 
 //    public Vote getVote()
 //    {
@@ -43,8 +48,8 @@ public class Transaction {
 
     public Long getTimestamp() { return timestamp;
     }
-    public Operation getOperation()
+    public Long getPageGUID()
     {
-        return operation;
+        return pageGUID;
     }
 }
