@@ -617,18 +617,46 @@ public class DFS
         }
     }
 
-    public File pull(String fileName, int pageNumber) {
+    public File pull(String fileName, int pageNumber) throws Exception {
+
+        // Read Metadata
+        FilesJson metadata = readMetaData();
+        FileJson foundFile = null;
+        PagesJson foundPage;
+        // Find file
+        boolean find = false;
+        int newPageIndex = 0;
+        int fileIndex = 0;
+        Long pageGUID = Long.valueOf(0);
+        for (int i = 0; i < metadata.file.size(); i++) {
+            if (metadata.file.get(i).getName().equals(fileName)) {
+                fileIndex = i;
+                metadata.file.get(i).incrementRef();                                            // Increment file refCount
+                writeMetaData(metadata);                                                        // Write updated metadata
+                foundFile = metadata.file.get(i);
+                find = true;
+                break;
+            }
+        }
+
+        foundPage = foundFile.pages.get(pageNumber);
 
         RemoteInputFileStream rifs = null;
 
         try {
             long timestamp = new Date().getTime();
 
-            Transaction trans = new Transaction(chord.guid, fileName, Transaction.Operation.READ, timestamp);
+            Long newWriteTS = new Date().getTime();
+            foundPage.readTS = newWriteTS;
+            foundFile.readTS = newWriteTS;
+            foundFile.pages.set(pageNumber, foundPage);
+            metadata.file.set(fileIndex, foundFile);
+            writeMetaData(metadata);
+            ChordMessageInterface peer = chord.locateSuccessor(foundPage.getGUID());
+            rifs = peer.get(foundPage.guid);
+            //Either return the RemoteFileInputStream itself
+            //or convert it into a File and return that
 
-            if (chord.canCommit(trans))  {
-                rifs = read(fileName, pageNumber);
-            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
